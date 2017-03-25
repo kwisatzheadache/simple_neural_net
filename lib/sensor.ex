@@ -11,8 +11,10 @@ defmodule Sensor do
     case sensor_name do
       rng ->
              %Sensor{id: {:sensor, generate_id()}, name: rng, vl: 2}
+      _ ->
+        exit("System does not yes support a sensor by the name: ~p", [sensor_name])
     end
-    end
+  end
   end
 end
 
