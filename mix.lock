@@ -1,0 +1,4 @@
+%{"exprintf": {:hex, :exprintf, "0.2.1", "b7e895dfb00520cfb7fc1671303b63b37dc3897c59be7cbf1ae62f766a8a0314", [:mix], []},
+  "graphmath": {:hex, :graphmath, "1.0.3", "ff961a5533fea4648ae47501ff241b4004ee719220d251abd44bc83f78f891bb", [:mix], []},
+  "matrix": {:hex, :matrix, "0.3.2", "9c826bc3a1117bf5e1c5cdcf3a3d95456c93bc2e127a04e363e9fc90b724f784", [:mix], [{:exprintf, "~> 0.1", [hex: :exprintf, optional: false]}]},
+  "plug": {:hex, :plug, "1.1.8", "db8b6dea79d4521d1100ffba8c1ce444de6a1270c73287ec94c8dac243e4038f", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, optional: true]}]}}
