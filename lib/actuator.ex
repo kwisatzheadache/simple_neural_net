@@ -6,9 +6,9 @@ defmodule Actuator do
   def create(actuator_name) do
     case actuator_name do
       pts ->
-             %actuator{id: {actuator, Generate.id()}, name: pts, vl: 1}
+             %Actuator{id: {:actuator, Generate.id()}, name: pts, vl: 1}
       _ ->
-             exit("system does not yet support an actuator byt the name:~p.",[actuator_name])
+             IO.puts "system does not yet support an actuator byt the name: #{inspect actuator_name}."
     end
   end
 end

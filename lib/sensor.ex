@@ -12,9 +12,8 @@ defmodule Sensor do
       rng ->
              %Sensor{id: {:sensor, Generate.id()}, name: rng, vl: 2}
       _ ->
-        exit("System does not yes support a sensor by the name: ~p", [sensor_name])
+        IO.puts "System does not yes support a sensor by the name:#{inspect sensor_name} "
     end
-  end
   end
 end
 
