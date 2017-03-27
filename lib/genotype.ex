@@ -17,7 +17,7 @@ defmodule Genotype do
       output_vl = a.vl
       #concatenate the hidden_layer_densities and output_vl to get total layer densities
       layer_densities = List.flatten([hidden_layer_densities | output_vl])
-      cx_id = {cortex, generate_id()}
+      cx_id = {cortex, Generate.id()}
 
       #creates the neuron layers
       neurons = Neuron.create_layers(cx_id, s, a, layer_densities)
