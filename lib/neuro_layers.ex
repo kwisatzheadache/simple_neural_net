@@ -13,9 +13,9 @@ defmodule Neuro_Layers do
   #Neuro_Layers.create/4
   def create(cx_id, sensor, actuator, layer_densities) do
     input_idps = {sensor.id, sensor.vl}
-    total_layers = List.length(layer_densities)
+    total_layers = length(layer_densities)
     [fl_neurons | next_layer_densities] = layer_densities
-    list_comp = for x <- Generate.ids(fl_neurons, []), do: {:neuron, {1, x}}
+    n_ids = for x <- Generate.ids(fl_neurons, []), do: {:neuron, {1, x}}
     Neuro_Layers.create(cx_id, actuator.id, 1, total_layers, input_idps, n_ids, next_layer_densities, [])
  end
 
@@ -38,7 +38,7 @@ defmodule Neuro_Layers do
 
   #Neuro_Layers.create/5
   def create(cx_id, input_idps, [id | n_ids], output_ids, accumulator) do
-    neuron = Neuron.create(input_idps, id, cx, output_ids)
+    neuron = Neuron.create(input_idps, id, cx_id, output_ids)
     Neuro_Layers.create(cx_id, input_idps, n_ids, output_ids, [neuron | accumulator])
   end
 

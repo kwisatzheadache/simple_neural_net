@@ -9,8 +9,8 @@ defmodule Sensor do
   """
   def create(sensor_name) do
     case sensor_name do
-      rng ->
-             %Sensor{id: {:sensor, Generate.id()}, name: rng, vl: 2}
+      "rng" ->
+             %Sensor{id: {:sensor, Generate.id()}, name: "rng", vl: 2}
       _ ->
         IO.puts "System does not yes support a sensor by the name:#{inspect sensor_name} "
     end

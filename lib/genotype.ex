@@ -14,13 +14,13 @@ defmodule Genotype do
       #assigns an actuator with the given name
       a = Actuator.create(actuator_name)
       #retrieve the output_vl from the actuator 
-      output_vl = a.vl
+      output_vl = [a.vl]
       #concatenate the hidden_layer_densities and output_vl to get total layer densities
       layer_densities = List.flatten([hidden_layer_densities | output_vl])
       cx_id = {:cortex, Generate.id()}
 
       #creates the neuron layers
-      neurons = Neuron.create_layers(cx_id, s, a, layer_densities)
+      neurons = Neuro_Layers.create(cx_id, s, a, layer_densities)
       #separates neurons into input and output layers
       [input_layer | _] = neurons
       [output_layer | _] = Enum.reverse(neurons)
@@ -40,8 +40,8 @@ defmodule Genotype do
       genotype = List.flatten([cortex, sensor, actuator | neurons])
 
       # #Write the genotype to a file. Not sure if this is actually going to work...
-      # {:ok, file} =  File.open(file_name, write)
-      # Enum.each(fn x -> IO.format(file, "~p.~n", x) end, genotype)
-      #     File.close(file)
+      {:ok, file} =  File.open(file_name, :write)
+      Enum.each(genotype, fn x -> IO.write(file, x) end)
+      File.close(file)
   end
 end

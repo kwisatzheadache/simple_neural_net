@@ -2,8 +2,8 @@ defmodule Neural_Input do
   @moduledoc """
   """
 
-  def create([{input_id, input_vl} | input_idps], accumulator) do
-    weights = Neural_input.weights(input_vl, [])
+  def create({{input_id, input_vl}, input_idps}, accumulator) do
+    weights = Neural_Input.weights(input_vl, [])
     Neural_Input.create(input_idps, [{input_id, weights} | accumulator])
   end
 
