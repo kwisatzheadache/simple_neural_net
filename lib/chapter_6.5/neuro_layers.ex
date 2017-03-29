@@ -16,20 +16,20 @@ defmodule NeuroLayers do
     total_layers = length(layer_densities)
     [fl_neurons | next_layer_densities] = layer_densities
     n_ids = for x <- Generate.ids(fl_neurons, []), do: {:neuron, {1, x}}
-    NeuroLayers.create({cx_id, actuator.id, 1, total_layers, input_idps, n_ids, next_layer_densities, []})
+    NeuroLayers.create(cx_id, actuator.id, 1, total_layers, input_idps, n_ids, next_layer_densities, [])
  end
 
   #Final layer, 
   #special iteration where layer_index === total_layers
   #NeuroLayers.create/8
-  def create({cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator}) when layer_index === total_layers do
+  def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator) when layer_index === total_layers do
     output_ids = [actuator_id]
     layer_neurons = NeuroLayers.create(cx_id, input_idps, n_ids, output_ids, [])
     :lists.reverse([layer_neurons | accumulator])
   end
 
   #NeuroLayers.create/8
-  def create({cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator}) do
+  def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator) do
     output_n_ids =  for x <- Generate.ids(next_layer_densities, []), do: {:neuron, {layer_index + 1, x}}
     layer_neurons = NeuroLayers.create(cx_id, input_idps, n_ids, output_n_ids, [])
     next_input_idps = for x <- n_ids, do: {x, 1}
