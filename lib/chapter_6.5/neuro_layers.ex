@@ -22,27 +22,29 @@ defmodule NeuroLayers do
   #Final layer, 
   #special iteration where layer_index === total_layers
   #NeuroLayers.create/8
-  def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator) when layer_index === total_layers do
-    output_ids = [actuator_id]
-    layer_neurons = NeuroLayers.create(cx_id, input_idps, n_ids, output_ids, [])
-    :lists.reverse([layer_neurons | accumulator])
-  end
-
-  #NeuroLayers.create/8
   def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator) do
-    output_n_ids =  for x <- Generate.ids(next_layer_densities, []), do: {:neuron, {layer_index + 1, x}}
-    layer_neurons = NeuroLayers.create(cx_id, input_idps, n_ids, output_n_ids, [])
-    next_input_idps = for x <- n_ids, do: {x, 1}
-    NeuroLayers.create(cx_id, actuator_id, layer_index + 1, total_layers, next_input_idps, output_n_ids, layer_densities, [layer_neurons | accumulator])
+    if layer_index === total_layers do
+      output_ids = [actuator_id]
+      layer_neurons = NeuroLayers.create(cx_id, input_idps, n_ids, output_ids, [])
+      :lists.reverse([layer_neurons | accumulator])
+
+    else
+      output_n_ids =  for x <- Generate.ids(next_layer_densities, []), do: {:neuron, {layer_index + 1, x}}
+      layer_neurons = NeuroLayers.create(cx_id, input_idps, n_ids, output_n_ids, [])
+      next_input_idps = for x <- n_ids, do: {:neuron, {1, x}}
+      NeuroLayers.create(cx_id, actuator_id, layer_index + 1, total_layers, next_input_idps, output_n_ids, layer_densities, [layer_neurons | accumulator])
+    end
   end
 
   #NeuroLayers.create/5
   def create(cx_id, input_idps, [id | n_ids], output_ids, accumulator) do
-    neuron = Neuron.create(input_idps, id, cx_id, output_ids)
-    NeuroLayers.create(cx_id, input_idps, n_ids, output_ids, [neuron | accumulator])
-  end
+    if length([id | n_ids]) === 0 do
+      accumulator
 
-  def create(_cx_id, _input_idps, [], _output_ids, accumulator) do
-    accumulator
+    else
+      neuron = Neuron.create(input_idps, id, cx_id, output_ids)
+      NeuroLayers.create(cx_id, input_idps, n_ids, output_ids, [neuron | accumulator])
+    end
   end
 end
+

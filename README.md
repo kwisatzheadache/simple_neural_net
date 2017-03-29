@@ -26,3 +26,7 @@ Right now, I'm troubleshooting the genotype generator from Chapter 6 Part 5.
 I seem to be having troubles with the NeuroLayers module. I'm not entirely
 sure what's wrong (I have no idea). I think something isn't being looped
 right in the recursion. It is looping indefinitely.
+
+Update: The problem is in the creation of n_ids in the NeuroLayers/8 step.
+I'm fairly certain. I'm too tired to figure it out now, but I think
+that it's not creating the list of n_ids properly.
