@@ -33,14 +33,20 @@ defmodule NeuroLayers do
   end
 
   #NeuroLayers.create/5
- def create_neurons(cx_id, input_idps, [id | n_ids], output_ids, accumulator) do
-    if length([id | n_ids]) === 0 do
+ def create_neurons(cx_id, input_idps, n_ids, output_ids, accumulator) do
+    if length() == 0 do
       accumulator
 
     else
+      [id | remaining_ids] = n_ids
       neuron = Neuron.create(input_idps, id, cx_id, output_ids)
-      NeuroLayers.create_neurons(cx_id, input_idps, n_ids, output_ids, [neuron | accumulator])
+      NeuroLayers.create_neurons(cx_id, input_idps, remaining_ids, output_ids, [neuron | accumulator])
     end
  end
 end
 
+defmodule TestGenotype do
+  def now do
+    Genotype.construct("ffnn.txt", "rng", "pts", [1,3])
+  end
+end

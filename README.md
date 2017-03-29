@@ -30,3 +30,10 @@ right in the recursion. It is looping indefinitely.
 Update: The problem is in the creation of n_ids in the NeuroLayers/8 step.
 I'm fairly certain. I'm too tired to figure it out now, but I think
 that it's not creating the list of n_ids properly.
+
+Update 2: Specifically, in the NeuralInput.create function, the neuron seems
+to have a list of three tuples, rather than one. They are identical.
+That's the problem. Somewhere when input_idps is generated, it is generating
+a single tuple three times, rather than three new ones.
+
+So, it's probably in one of the ''''for x <- [list], do:'''' statements.
