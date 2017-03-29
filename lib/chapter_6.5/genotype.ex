@@ -20,7 +20,7 @@ defmodule Genotype do
       cx_id = {:cortex, Generate.id()}
 
       #creates the neuron layers
-      neurons = NeuroLayers.create(cx_id, s, a, layer_densities)
+      neurons = NeuroLayers.init(cx_id, s, a, layer_densities)
       #separates neurons into input and output layers
       [input_layer | _] = neurons
       [output_layer | _] = Enum.reverse(neurons)
