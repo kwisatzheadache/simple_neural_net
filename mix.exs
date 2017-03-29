@@ -31,7 +31,8 @@ defmodule Neuron.Mixfile do
     [
     {:matrix, "~> 0.3.0"},
     {:graphmath, "~> 1.0.2"},
-    {:plug, "~> 1.1.0"}
+    {:plug, "~> 1.1.0"},
+    {:credo, "~> 0.7.2"}
     ]
   end
 end

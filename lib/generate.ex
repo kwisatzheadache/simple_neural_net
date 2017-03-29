@@ -18,6 +18,6 @@ defmodule Generate do
 
   def id() do
     {mega_seconds, seconds, micro_seconds} = :os.timestamp
-    1/(mega_seconds*1000000 + seconds + micro_seconds/1000000)
+    1/(mega_seconds * 1_000_000 + seconds + micro_seconds / 1_000_000)
   end
 end

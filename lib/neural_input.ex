@@ -1,10 +1,10 @@
-defmodule Neural_Input do
+defmodule NeuralInput do
   @moduledoc """
   """
 
   def create({{input_id, input_vl}, input_idps}, accumulator) do
-    weights = Neural_Input.weights(input_vl, [])
-    Neural_Input.create(input_idps, [{input_id, weights} | accumulator])
+    weights = NeuralInput.weights(input_vl, [])
+    NeuralInput.create(input_idps, [{input_id, weights} | accumulator])
   end
 
   def create([], accumulator) do
@@ -18,7 +18,7 @@ defmodule Neural_Input do
     case index do
       0 -> accumulator
       _ -> weight = :random.uniform() - 0.5
-           Neural_Input.weights(index - 1, [weight | accumulator])
+           NeuralInput.weights(index - 1, [weight | accumulator])
     end
   end
 end

@@ -6,7 +6,7 @@ defmodule Neuron do
   defstruct id: nil, cx_id: nil, af: nil, input_idps: [], output_ids: []
 
   def create(input_idps, id, cx_id, output_ids) do
-    proper_input_idps = Neural_Input.create(input_idps, [])
+    proper_input_idps = NeuralInput.create(input_idps, [])
     %Neuron{id: id, cx_id: cx_id, af: "tanh", input_idps: proper_input_idps, output_ids: output_ids}
   end
 end
