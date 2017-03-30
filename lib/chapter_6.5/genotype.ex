@@ -21,6 +21,7 @@ defmodule Genotype do
 
       #creates the neuron layers
       neurons = NeuroLayers.init(cx_id, s, a, layer_densities)
+      flat_neurons = List.flatten(neurons)
       #separates neurons into input and output layers
       [input_layer | _] = neurons
       [output_layer | _] = Enum.reverse(neurons)
@@ -29,7 +30,9 @@ defmodule Genotype do
         # when I know more about the what the list looks like, I may have to revisit this.
       fl_n_ids = Enum.map(input_layer, fn x -> x.id end)
       ll_n_ids = Enum.map(output_layer, fn x -> x.id end)
-      n_ids = Enum.map(neurons, fn x -> x.id end)
+      IO.inspect neurons
+      n_ids = Enum.map(flat_neurons, fn x -> x.id end)
+      IO.inspect n_ids
       #provide cortex and connection info to sensor
       sensor =  %{s | cx_id: cx_id, fanout_ids: fl_n_ids}
       #provide cortex and connection info actuator
@@ -39,7 +42,7 @@ defmodule Genotype do
       #genotype is a list of all the components. Not sure why the neurons are treated as the tail...
       genotype = List.flatten([cortex, sensor, actuator | neurons])
 
-      # #Write the genotype to a file. Not sure if this is actually going to work...
+       #Write the genotype to a file. Not sure if this is actually going to work...
       # {:ok, file} =  File.open(file_name, :write)
       # Enum.each(genotype, fn x -> IO.write(file, x) end)
       # File.close(file)

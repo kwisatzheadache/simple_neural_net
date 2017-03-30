@@ -1,0 +1,18 @@
+* (FunctionClauseError) no function clause matching in NeuroLayers.create/8
+    (neuron) lib/chapter_6.5/neuro_layers.ex:21: NeuroLayers.create({:cortex, 0.13074663416304239},
+    {:actuator, 0.8629915888191331},
+    3,
+    3,
+    [{{:neuron, 0.7866549215350926}, 1}],
+    [neuron: 0.7866549215350926],
+    [],
+    [[%Neuron{af: "tanh", cx_id: {:cortex, 0.13074663416304239}, id: {:neuron, 0.006765518800032611}, input_idps: [{{:neuron, 0.12564849760280472}, [-0.29055144381290376]}, {{:neuron, 0.7029865612547619}, [0.19714078430055193]}, {{:neuron, 0.006765518800032611}, [-0.34018857993684404]}, {:bias, 0.05825580837529021}],
+                                                                                                      output_ids: [neuron: 0.7866549215350926]}, %Neuron{af: "tanh", cx_id: {:cortex, 0.13074663416304239}, id: {:neuron, 0.7029865612547619}, input_idps: [{{:neuron, 0.12564849760280472}, [0.16695729348540134]}, {{:neuron, 0.7029865612547619}, [-0.022878943910807248]}, {{:neuron, 0.006765518800032611}, [0.09651008134027894]}, {:bias, -0.35789178229875773}], output_ids: [neuron: 0.7866549215350926]}, %Neuron{af: "tanh", cx_id: {:cortex, 0.13074663416304239}, id: {:neuron, 0.12564849760280472}, input_idps: [{{:neuron, 0.12564849760280472}, [0.0014907142064750634]}, {{:neuron, 0.7029865612547619}, [-0.18867324519560702]}, {{:neuron, 0.006765518800032611}, [0.09744752478329799]}, {:bias, 0.41565620697183103}], output_ids: [neuron: 0.7866549215350926]}], [%Neuron{af: "tanh", cx_id: {:cortex, 0.13074663416304239}, id: {:neuron, 0.6832648290726652}, input_idps: [{{:sensor, 0.8771480091821443}, [0.2230402056221108, -0.05641538255427969]}, {:bias, 0.44581636451986995}], output_ids: [neuron: 0.12564849760280472, neuron: 0.7029865612547619, neuron: 0.006765518800032611]}]])
+    (neuron) lib/chapter_6.5/genotype.ex:23: Genotype.construct/4
+  ** (ArgumentError) argument error
+             :erlang.apply([%Neuron{af: "tanh", cx_id: {:cortex, 0.2723677749352272}, id: {:neuron, 0.28955249796765425},
+                                        input_idps: [{{:sensor, 0.11094025369373799}, [0.2230402056221108, -0.05641538255427969]}, {:bias, 0.44581636451986995}],
+                                        output_ids: [neuron: 0.18858459374573247, neuron: 0.9502145681018098, neuron: 0.008336649117187754]}], :id, [])
+    (neuron) lib/chapter_6.5/genotype.ex:32: anonymous fn/1 in Genotype.construct/4
+    (elixir) lib/enum.ex:1229: Enum."-map/2-lists^map/1-0-"/2
+    (neuron) lib/chapter_6.5/genotype.ex:32: Genotype.construct/4 
