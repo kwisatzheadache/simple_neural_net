@@ -1,0 +1,10 @@
+(neuron) lib/chapter_6.5/neuro_layers.ex:21: NeuroLayers.create({:cortex, 0.8481638180667047},
+ actuator_id {:actuator, 0.3328120668359429},
+ layer_index, total_layers 3, 3,
+  input_idps [{{:neuron, {2, 0.6764167376496832}}, 1}, {{:neuron, {2, 0.6293778540779512}}, 1}, {{:neuron, {2, 0.9293323172721203}}, 1}],
+  n_ids[neuron: {3, 0.2507730287940543}],
+  next_layer_densities[],
+  accumulator[[%Neuron{af: "tanh", cx_id: {:cortex, 0.8481638180667047}, id: {:neuron, {2, 0.9293323172721203}}, input_idps: [{{:neuron, {1, 0.323572342748348}}, [0.16695729348540134]}, {:bias, -0.022878943910807248}], output_ids: [neuron: {3, 0.2507730287940543}]},
+               %Neuron{af: "tanh", cx_id: {:cortex, 0.8481638180667047}, id: {:neuron, {2, 0.6293778540779512}}, input_idps: [{{:neuron, {1, 0.323572342748348}}, [0.09744752478329799]}, {:bias, 0.41565620697183103}], output_ids: [neuron: {3, 0.2507730287940543}]},
+               %Neuron{af: "tanh", cx_id: {:cortex, 0.8481638180667047}, id: {:neuron, {2, 0.6764167376496832}}, input_idps: [{{:neuron, {1, 0.323572342748348}}, [0.0014907142064750634]}, {:bias, -0.18867324519560702}], output_ids: [neuron: {3, 0.2507730287940543}]}], 
+              [%Neuron{af: "tanh", cx_id: {:cortex, 0.8481638180667047}, id: {:neuron, {1, 0.323572342748348}}, input_idps: [{{:sensor, 0.30126356170080787}, [0.2230402056221108, -0.05641538255427969]}, {:bias, 0.44581636451986995}], output_ids: [neuron: {2, 0.6764167376496832}, neuron: {2, 0.6293778540779512}, neuron: {2, 0.9293323172721203}]}]])

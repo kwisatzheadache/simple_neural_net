@@ -11,7 +11,7 @@ defmodule NeuroLayers do
     Finally, the call generates ids for the first layer of neurons, then drops into the recursive NeuroLayers.create call.
     """
   def init(cx_id, sensor, actuator, layer_densities) do
-    input_idps = {sensor.id, sensor.vl}
+    input_idps = [{sensor.id, sensor.vl}]
     total_layers = length(layer_densities)
     [fl_neurons | next_layer_densities] = layer_densities
     n_ids = for x <- Generate.ids(fl_neurons, []), do: {:neuron, {1, x}}
@@ -19,7 +19,7 @@ defmodule NeuroLayers do
   end
 
   def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator) do
-    if layer_index === total_layers do
+    if layer_index == total_layers do
       output_ids = [actuator_id]
       layer_neurons = NeuroLayers.create_neurons(cx_id, input_idps, n_ids, output_ids, [])
       :lists.reverse([layer_neurons | accumulator])
@@ -27,14 +27,15 @@ defmodule NeuroLayers do
     else
       output_n_ids =  for x <- Generate.ids(next_layer_densities, []), do: {:neuron, {layer_index + 1, x}}
       layer_neurons = NeuroLayers.create_neurons(cx_id, input_idps, n_ids, output_n_ids, [])
-      next_input_idps = for x <- Generate.ids(next_layer_densities, []), do: {x, 1}# this needs to be a list of tuples - id and vl. 
+      next_input_idps = for x <- n_ids, do: {x, 1} 
+      #next_input_idps = for x <- Generate.ids(next_layer_densities, []), do: {{:neuron, x}, 1}# this needs to be a list of tuples - id and vl. 
       NeuroLayers.create(cx_id, actuator_id, layer_index + 1, total_layers, next_input_idps, output_n_ids, layer_densities, [layer_neurons | accumulator])
     end
   end
 
   #NeuroLayers.create/5
  def create_neurons(cx_id, input_idps, n_ids, output_ids, accumulator) do
-    if length() == 0 do
+    if length(n_ids) == 0 do
       accumulator
 
     else
