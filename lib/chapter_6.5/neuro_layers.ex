@@ -18,16 +18,17 @@ defmodule NeuroLayers do
     NeuroLayers.create(cx_id, actuator.id, 1, total_layers, input_idps, n_ids, next_layer_densities, [])
   end
 
-  def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, [next_layer_densities | layer_densities], accumulator) do
+  def create(cx_id, actuator_id, layer_index, total_layers, input_idps, n_ids, densities, accumulator) do
     if layer_index == total_layers do
       output_ids = [actuator_id]
       layer_neurons = NeuroLayers.create_neurons(cx_id, input_idps, n_ids, output_ids, [])
       :lists.reverse([layer_neurons | accumulator])
 
     else
-      output_n_ids =  for x <- Generate.ids(next_layer_densities, []), do: {:neuron, x}
+      [next_layer_densities | layer_densities] = densities
+      output_n_ids =  for x <- Generate.ids(next_layer_densities, []), do: {:neuron, x} 
       layer_neurons = NeuroLayers.create_neurons(cx_id, input_idps, n_ids, output_n_ids, [])
-      next_input_idps = for x <- n_ids, do: {x, 1}
+      next_input_idps = for x <- output_n_ids, do: {x, 1}
       #next_input_idps = for x <- Generate.ids(next_layer_densities, []), do: {{:neuron, x}, 1}# this needs to be a list of tuples - id and vl. 
       NeuroLayers.create(cx_id, actuator_id, layer_index + 1, total_layers, next_input_idps, output_n_ids, layer_densities, [layer_neurons | accumulator])
     end

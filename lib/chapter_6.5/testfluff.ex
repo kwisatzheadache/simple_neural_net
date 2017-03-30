@@ -1,0 +1,5 @@
+defmodule Testfluff do
+  def fluff() do
+  :lists.reverse([[%Neuron{af: "tanh", cx_id: {:cortex, 0.30828871323002016}, id: {:neuron, 0.8920114015893766}, input_idps: [{{:neuron, 0.1571638554533373}, [0.16695729348540134]}, {:bias, -0.022878943910807248}], output_ids: [neuron: 0.6144002619645775]}, %Neuron{af: "tanh", cx_id: {:cortex, 0.30828871323002016}, id: {:neuron, 0.6909430564406188}, input_idps: [{{:neuron, 0.1571638554533373}, [0.09744752478329799]}, {:bias, 0.41565620697183103}], output_ids: [neuron: 0.6144002619645775]}, %Neuron{af: "tanh", cx_id: {:cortex, 0.30828871323002016}, id: {:neuron, 0.7146425799464515}, input_idps: [{{:neuron, 0.1571638554533373}, [0.0014907142064750634]}, {:bias, -0.18867324519560702}], output_ids: [neuron: 0.6144002619645775]}], [%Neuron{af: "tanh", cx_id: {:cortex, 0.30828871323002016}, id: {:neuron, 0.1571638554533373}, input_idps: [{{:sensor, 0.46227638220026057}, [0.2230402056221108, -0.05641538255427969]}, {:bias, 0.44581636451986995}], output_ids: [neuron: 0.7146425799464515, neuron: 0.6909430564406188, neuron: 0.8920114015893766]}]])
+  end
+end
