@@ -13,11 +13,13 @@ To run a quick test of the app sofar, clone the repo, then do the following:
 
 Alternatively, to create your own feed forward neural net, do this:
 
-`iex -S mix
+`iex -S mix`
+``` elixir
+>ffnn = FFNN.create(your_list)
+```
 
->ffnn = FFNN.create(your_list)`
-
-Where `your_list` is the Layer Density list of your choosing. [1,2,3] or [2,4,3], for example. 
+Where `your_list` is the Layer Density list of your choosing. `[1,2,3]` or
+`[2,4,3]`, for example. 
 
 ## Installation
 
