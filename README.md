@@ -5,6 +5,20 @@ so expect plenty of errors along the way, as well as improperly structured
 code, etc, while I learn. 
 
 
+# Testing
+
+To run a quick test of the app sofar, clone the repo, then do the following:
+
+`mix test`
+
+Alternatively, to create your own feed forward neural net, do this:
+
+`iex -S mix
+
+>ffnn = FFNN.create(your_list)`
+
+Where `your_list` is the Layer Density list of your choosing. [1,2,3] or [2,4,3], for example. 
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
