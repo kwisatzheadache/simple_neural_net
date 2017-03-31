@@ -36,40 +36,7 @@ be found at [https://hexdocs.pm/nn](https://hexdocs.pm/nn).
 
 # Progress
 
-Right now, I'm troubleshooting the genotype generator from Chapter 6 Part 5. 
-I seem to be having troubles with the NeuroLayers module. I'm not entirely
-sure what's wrong (I have no idea). I think something isn't being looped
-right in the recursion. It is looping indefinitely.
+Right now, I'm finishing up the genotype creator from Chapter 6.5. It works
+properly, I just need to fix the write stage to output to a nice neat file.
 
-Update: The problem is in the creation of n_ids in the NeuroLayers/8 step.
-I'm fairly certain. I'm too tired to figure it out now, but I think
-that it's not creating the list of n_ids properly.
-
-Update 2: Specifically, in the NeuralInput.create function, the neuron seems
-to have a list of three tuples, rather than one. They are identical.
-That's the problem. Somewhere when input_idps is generated, it is generating
-a single tuple three times, rather than three new ones.
-
-So, it's probably in one of the `for x <- [list], do:` statements.
-
-Update 3: I figured out the problem - it was a pattern match issue, where
-[head | tail] could not be processed due to an empty list []. Removed pattern
-matching statement from function call and relegated it to the conditional
-where the list length is >= 1.
-
-
-Running the test file will now automatically create a FFNN with [1,3] layer densities and output the Genotype.
-
-
-`mix test`
-
-
-If you'd like to create a larger or differently structured feed forward NN, run 
-
-`iex -S mix`
-
-`>genotype = Genotype.construct("ffnn.txt", "rng", "pts", [your layer densities])`
-
-Where `[your layer densities]` ought to be something like [1,2,3], for 
-example. Write now, the write to file is disabled, but the Genotype will be 
-assigned to your variable, `genotype`.
+See above for code to run Genotype constructor. 
