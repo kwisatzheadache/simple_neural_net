@@ -36,4 +36,26 @@ to have a list of three tuples, rather than one. They are identical.
 That's the problem. Somewhere when input_idps is generated, it is generating
 a single tuple three times, rather than three new ones.
 
-So, it's probably in one of the ''''for x <- [list], do:'''' statements.
+So, it's probably in one of the `for x <- [list], do:` statements.
+
+Update 3: I figured out the problem - it was a pattern match issue, where
+[head | tail] could not be processed due to an empty list []. Removed pattern
+matching statement from function call and relegated it to the conditional
+where the list length is >= 1.
+
+
+Running the test file will now automatically create a FFNN with [1,3] layer densities and output the Genotype.
+
+
+`mix test`
+
+
+If you'd like to create a larger or differently structured feed forward NN, run 
+
+`iex -S mix`
+
+`>genotype = Genotype.construct("ffnn.txt", "rng", "pts", [your layer densities])`
+
+Where `[your layer densities]` ought to be something like [1,2,3], for 
+example. Write now, the write to file is disabled, but the Genotype will be 
+assigned to your variable, `genotype`.

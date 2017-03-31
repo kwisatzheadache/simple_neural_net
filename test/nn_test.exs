@@ -5,4 +5,8 @@ defmodule NnTest do
   test "the truth" do
     assert 1 + 1 == 2
   end
+
+  test "genotype" do
+    TestGenotype.now
+  end
 end
