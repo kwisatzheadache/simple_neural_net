@@ -15,7 +15,7 @@ Alternatively, to create your own feed forward neural net, do this:
 
 `iex -S mix`
 ``` elixir
->ffnn = FFNN.create(your_list)
+ffnn = FFNN.create(your_list)
 ```
 
 Where `your_list` is the Layer Density list of your choosing. `[1,2,3]` or
