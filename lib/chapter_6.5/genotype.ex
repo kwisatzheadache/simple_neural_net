@@ -43,8 +43,9 @@ defmodule Genotype do
       genotype = List.flatten([cortex, sensor, actuator | neurons])
 
        #Write the genotype to a file. Not sure if this is actually going to work...
-      # {:ok, file} =  File.open(file_name, :write)
+      # {:ok, file} =  File.open(file_name, [:write])
       # Enum.each(genotype, fn x -> IO.write(file, x) end)
+      # IO.write(file, genotype)
       # File.close(file)
   end
 end
