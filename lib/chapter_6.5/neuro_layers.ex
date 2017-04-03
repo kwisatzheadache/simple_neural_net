@@ -46,9 +46,3 @@ defmodule NeuroLayers do
     end
  end
 end
-
-defmodule TestGenotype do
-  def now do
-    Genotype.construct("ffnn.txt", "rng", "pts", [1,3])
-  end
-end

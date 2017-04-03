@@ -1,4 +1,7 @@
 defmodule Clause do
+  @moduledoc """
+  This was just used to troubleshoot some error codes I was getting. It turns out, Elixir doesn't like to pattern match on an empty list. Certainly not in the context of a function call.
+  """
   def test(input, [head | tail]) do
     IO.puts input
     IO.puts head

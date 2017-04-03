@@ -1,5 +1,8 @@
 defmodule NeuralInput do
   @moduledoc """
+  Creates the weights for the neurons. Receives the id and vector length for the neurons.
+  Returns a neuron in the form of {id, weights}
+  Weights are randomly generated.
   """
 
   def create([current_neuron | input_idps], accumulator) do

@@ -1,6 +1,7 @@
 defmodule Sensor do
   @moduledoc """
   Sensors are responsible for creating the initial input for the NN. 
+  Currently, the only supported sensor is "rng"
   """
   defstruct id: nil, cx_id: nil, name: nil, vl: nil, fanout_ids: nil
 
