@@ -9,14 +9,16 @@ defmodule Cortex.ExoSelf do
   # loop/1
   def loop(exoself_pid) do
     receive do
-      {exoself_pid, {id, s_pids, a_pids, n_pids} total_steps} ->
+      {exoself_pid, {id, s_pids, a_pids, n_pids}, total_steps} ->
         Enum.each(s_pids, fn x -> send x, {self(), :sync} end)
-        loop (id, exoself_pid, s_pids, {a_pids, a_pids}, n_pids, total_steps)
+        loop(id, exoself_pid, s_pids, {a_pids, a_pids}, n_pids, total_steps)
     end
   end
 
   # loop/6
-  def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, steps) if steps == 0 do
+  def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, steps) do
+
+    if steps == 0 do
       {a_pids, m_pids} = a_and_m_pids
                     IO.puts "Cortex is backing up and terminating #{id}"
                     neuron_ids_n_weights = get_backup(n_pids, [])
@@ -25,9 +27,10 @@ defmodule Cortex.ExoSelf do
                     # Send.list(s_pids, {self(), :terminate})
                     # Send.list(m_a_pids, {self(), :terminate})
                     # Send.list(n_pids, {self(), :terminate})
-                    # Enum.each(s_pids, fn x -> send x, {self(), :terminate} end)
+                   # Enum.each(s_pids, fn x -> send x, {self(), :terminate} end)
                     # Enum.each(m_a_pids, fn x -> send x, {self(), :terminate} end)
                     # Enum.each(n_pids, fn x -> send x, {self(), :terminate} end)
+
     else
       {a_pids, m_pids} = a_and_m_pids
       case a_pids do
@@ -45,9 +48,9 @@ defmodule Cortex.ExoSelf do
                     end
         [] ->
                     Send.list(s_pids, {self(), :sync}) 
-                    loop (id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, steps - 1)
+                    loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, steps - 1)
 
-    end
+      end
     end
   end
 
@@ -63,10 +66,9 @@ defmodule Cortex.ExoSelf do
                 get_backup(remaining_n_pids, [{n_id, weight_tuples} | acc])
 
             end
-    end
-  end
+  #   end
+   end
 end
-
 
 defmodule Send do
   @moduledoc"""
