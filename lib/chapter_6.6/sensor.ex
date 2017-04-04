@@ -3,7 +3,7 @@ defmodule Sensor do
   Generates the sensor. receives message from exoself then drops into loop.
   """
   def generate(exoself_pid, node) do
-    spawn(node, Sensor, :loop, [exoself_pid])
+    Node.spawn(node, Sensor, :loop, [exoself_pid])
   end
 
   def loop(exoself_pid) do

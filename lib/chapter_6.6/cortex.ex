@@ -13,7 +13,7 @@ defmodule Cortex.ExoSelf do
   Cortex.ExoSelf.create(exoself_pid, node)
   """
   def generate(exoself_pid, node) do
-    spawn(node, Cortex.Exoself, :loop, [exoself_pid])
+    Node.spawn(node, Cortex.Exoself, :loop, [exoself_pid])
   end
 
   # loop/1

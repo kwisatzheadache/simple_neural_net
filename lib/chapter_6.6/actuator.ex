@@ -5,7 +5,7 @@ defmodule Actuator do
   @doc """
   """
   def generate(exoself_pid, node) do
-    spawn(node, Actuator, :loop, [exoself_pid])
+    Node.spawn(node, Actuator, :loop, [exoself_pid])
   end
 
   def loop(exoself_pid) do
