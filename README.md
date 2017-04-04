@@ -38,7 +38,7 @@ be found at [https://hexdocs.pm/nn](https://hexdocs.pm/nn).
 
 # Progress
 
-Right now, I'm finishing up the genotype creator from Chapter 6.5. It works
-properly, I just need to fix the write stage to output to a nice neat file.
+I've finished chapter 6.5 - the genotype constructor. Run the above code to
+give it a whirl. I'm not working on ch. 6.6 - phenotype matching. It's much
+harder than the genotype part. I will post executables when they're available.
 
-See above for code to run Genotype constructor. 
