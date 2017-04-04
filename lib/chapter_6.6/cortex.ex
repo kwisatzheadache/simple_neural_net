@@ -1,9 +1,19 @@
 defmodule Cortex.ExoSelf do
   @moduledoc """
+  The exoself is responsible for sending :sync and :terminate messages to teh neurons, sensors, and activators.
+  It receives a message - {exoself_pid, {id, s_pids, a_pids, n_pids}, totat_steps}
+  And then begins the loop to train the neuron.
+  At each iteration,  it stores actuator data in the m_a_pids and pulls it in the next iteration.
+
   """
 
+  @doc """
+  Creates the exoself_pid.
+
+  Cortex.ExoSelf.create(exoself_pid, node)
+  """
   def generate(exoself_pid, node) do
-    :erlang.spawn(node, Cortex.Exoself, :loop, [exoself_pid])
+    spawn(node, Cortex.Exoself, :loop, [exoself_pid])
   end
 
   # loop/1
@@ -71,21 +81,3 @@ defmodule Cortex.ExoSelf do
    end
 end
 
-defmodule Send do
-  @moduledoc"""
-  Module for automating send/2 functionality
-  """
-
-  @doc """
-  Send a list of pids a message.
-
-  Send.list([pids], {self(), :terminate})
-  """
-  def list(list, msg) do
-    Enum.each(list, fn x -> send x, msg end)
-  end
-
-  def lists(lists, msg) do
-    Enum.each(lists, fn x -> Send.list(x, msg) end)
-  end
-end
