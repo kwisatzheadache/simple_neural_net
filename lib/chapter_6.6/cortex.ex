@@ -19,7 +19,7 @@ defmodule Cortex.ExoSelf do
   def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, steps) do
 
     if steps == 0 do
-      {a_pids, m_pids} = a_and_m_pids
+      {a_pids, m_a_pids} = a_and_m_pids
                     IO.puts "Cortex is backing up and terminating #{id}"
                     neuron_ids_n_weights = get_backup(n_pids, [])
                     send exoself_pid, {self(), :backup, neuron_ids_n_weights}
@@ -32,13 +32,14 @@ defmodule Cortex.ExoSelf do
                     # Enum.each(n_pids, fn x -> send x, {self(), :terminate} end)
 
     else
-      {a_pids, m_pids} = a_and_m_pids
-      case a_pids do
-        m_pids ->
+      {a_pids, m_a_pids} = a_and_m_pids
+      length_a_pids = length(a_pids)
+      case length_a_pids do
+          _ ->
                     [a_pid | a_pids_leftover] = m_a_pids
-                    receive
+                    receive do
                             {a_pid, :sync} ->
-                                            loop(id, exoself_pid, s_pids, {a_pids_leftover, m_a_pids}, n_pids, step)
+                                            loop(id, exoself_pid, s_pids, {a_pids_leftover, m_a_pids}, n_pids, steps)
                             :terminate ->
                                               IO.puts"Cortex is terminating #{id}"
                                               Send.lists([s_pids, m_a_pids, n_pids], {self(), :terminate})
@@ -46,7 +47,7 @@ defmodule Cortex.ExoSelf do
                                               # Send.list(m_a_pids, {self(), :terminate})
                                               # Send.list(n_pids, {self(), :terminate})
                     end
-        [] ->
+          0 ->
                     Send.list(s_pids, {self(), :sync}) 
                     loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, steps - 1)
 
@@ -61,12 +62,12 @@ defmodule Cortex.ExoSelf do
       _  ->
             [n_pid | remaining_n_pids] = n_pids
             send n_pid, {self(), :get_backup}
-            receive
+            receive do
               {n_pid, n_id, weight_tuples} ->
                 get_backup(remaining_n_pids, [{n_id, weight_tuples} | acc])
 
             end
-  #   end
+     end
    end
 end
 
