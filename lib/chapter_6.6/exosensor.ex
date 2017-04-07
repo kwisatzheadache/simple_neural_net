@@ -1,9 +1,9 @@
-defmodule Sensor do
+defmodule ExoSensor do
   @moduledoc """
   Generates the sensor. receives message from exoself then drops into loop.
   """
   def generate(exoself_pid, node) do
-    Node.spawn(node, Sensor, :loop, [exoself_pid])
+    Node.spawn(node, ExoSensor, :loop, [exoself_pid])
   end
 
   def loop(exoself_pid) do
@@ -19,7 +19,7 @@ defmodule Sensor do
   def loop(id, cx_pid, sensor_name, vl, fanout_pids) do
     receive do
       {cx_pid, :sync} ->
-        sensory_vector =  Sensor.sensor_name(vl)
+        sensory_vector =  ExoSensor.sensor_name(vl)
         Send.list(fanout_pids, {self(), :forward, sensory_vector})
         loop(id, cx_pid, sensor_name, vl, fanout_pids)
       {cx_pid, :terminate} ->

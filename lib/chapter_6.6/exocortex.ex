@@ -1,4 +1,4 @@
-defmodule Cortex.ExoSelf do
+defmodule ExoCortex do
   @moduledoc """
   The exoself is responsible for sending :sync and :terminate messages to teh neurons, sensors, and activators.
   It receives a message - {exoself_pid, {id, s_pids, a_pids, n_pids}, totat_steps}
@@ -13,7 +13,7 @@ defmodule Cortex.ExoSelf do
   Cortex.ExoSelf.create(exoself_pid, node)
   """
   def generate(exoself_pid, node) do
-    Node.spawn(node, Cortex.Exoself, :loop, [exoself_pid])
+    Node.spawn(node, ExoCortex, :loop, [exoself_pid])
   end
 
   # loop/1

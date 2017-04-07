@@ -1,11 +1,11 @@
-defmodule Neuron do
+defmodule ExoNeuron do
   @moduledoc """
   """
 
   @doc"""
   """
   def generate(exoself_pid, node) do
-    Node.spawn(node, Neuron, :loop, [exoself_pid])
+    Node.spawn(node, ExoNeuron, :loop, [exoself_pid])
   end
 
   def loop(exoself_pid) do
@@ -19,12 +19,12 @@ defmodule Neuron do
     {all_input_pidps, m_input_pidps} = input_pidps_info
     case length(all_input_pidps) do
       0 ->
-        output = Neuron.af(acc)
+        output = ExoNeuron.af(acc)
         Send.list(output_pids, {self(), :forward, [output]})
         loop(id, cx_pid, af, {m_input_pidps, m_input_pidps}, output_pids, 0)
       1 ->
         bias = all_input_pidps
-        output = Neuron.af(acc + bias)
+        output = ExoNeuron.af(acc + bias)
         Send.list(output_pids, {self(), :forward, [output]})
         loop(id, cx_pid, af, {m_input_pidps, m_input_pidps}, output_pids, 0)
       _ ->

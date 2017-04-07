@@ -1,11 +1,11 @@
-defmodule Actuator do
+defmodule ExoActuator do
   @moduledoc """
   """
 
   @doc """
   """
   def generate(exoself_pid, node) do
-    Node.spawn(node, Actuator, :loop, [exoself_pid])
+    Node.spawn(node, ExoActuator, :loop, [exoself_pid])
   end
 
   def loop(exoself_pid) do
@@ -27,7 +27,7 @@ defmodule Actuator do
                     :ok
             end
 
-      [] -> Actuator.a_name(:lists.reverse(acc))
+      [] -> ExoActuator.a_name(:lists.reverse(acc))
             send cx_pid, {self(), :sync}
             loop(id, cx_pid, a_name, {m_fanin_pids, m_fanin_pids}, [])
 
@@ -35,6 +35,6 @@ defmodule Actuator do
   end
 
   def pts(result) do
-    IO.puts"Actuator.pts(result): #{result}"
+    IO.puts"ExoActuator.pts(result): #{result}"
   end
 end
