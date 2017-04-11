@@ -1,18 +1,43 @@
 defmodule Exoself do
   @moduledoc """
+  The Exoself module is responsible for creating the NN from the information contained in the genotype.
+  It reads the genotype from the given file and creates accordingly.
   """
 
   @doc """
+  This generates a genotype and feeds it, along with the source file to the map function. It may seem
+  counter-intuitive to send the same information twice, but this is so that when the map/2 is called
+  later with a source genotype and an alternate, the same process will be enacted.
   """
-  # def map() do
-  #   map("ffnn")
-  # end
-
-  def map(file_name) do
+    def map(file_name) do
     genotype = Genotype.read(file_name)
     spawn(Exoself, :map, [file_name, genotype])
   end
 
+
+  @doc """
+  This is where the magic happens. A table is created with the erlang call :ets.new/2 so that all
+  processes can push and pul information to the same source. It is called ids_npids, it is a random seed.
+
+  Take the case of a :neuron. The Exoself.spawn_cerebral_units takes the id of the neuron being spawned,
+  and links it with the PID received Neuron.generate(self(), node()) call. This tuple, {n_id, PID}
+  is then pushed to the table. The table itself winds up looking something like this.
+
+  iex> :ets.i(ids_npids)
+  <1   > {<0.195.0>,{cortex,0.8863365168735315}}
+  <2   > {<0.216.0>,{actuator,0.40465764440758645}}
+  <3   > {<0.225.0>,{neuron,0.9972234354362616}}
+  <4   > {{sensor,0.28483516273019394},<0.203.0>}
+  <5   > {{neuron,0.6892255213216225},<0.224.0>}
+  <6   > {<0.224.0>,{neuron,0.6892255213216225}}
+  <7   > {<0.203.0>,{sensor,0.28483516273019394}}
+  <8   > {{cortex,0.8863365168735315},<0.195.0>}
+  <9   > {{neuron,0.9972234354362616},<0.225.0>}
+  <10  > {{actuator,0.40465764440758645},<0.216.0>}
+  
+  Finally, the link_cerebral_units and link_cortex calls tie together all the PIDS and then the nn
+  is running.
+  """
   def map(file_name, genotype) do
     ids_npids = :ets.new(:ids_npids, [:set, :private])
     [cx | cerebral_units] = Genotype.read(file_name)
@@ -55,6 +80,9 @@ defmodule Exoself do
     end
   end
 
+  @doc """
+  Calls corresponding link_* function. 
+  """
   def link_cerebral_units(records, ids_npids) do
     if length(records) == 0 do
       :ok
@@ -69,8 +97,14 @@ defmodule Exoself do
     end
   end
 
-  # I've chosen to send [r | tail_records] = records as separate arguments. This may
-  # cause trouble down the line, but I think I did it right.
+  @doc """
+  Explanation carries over to link_actuator and link_neuron as well.
+  Gathers pid info from :ets table and creates pid lists for fan_in and fan_out neurons.
+
+  Important step: sends all of that info to the sensor (s_pid).
+
+  Continues recursively to handle a list of sensors.
+  """
   def link_sensor(r, tail_records, ids_npids) do
     s_id = r.id
     s_pid = :ets.lookup_element(ids_npids, s_id, 2)
@@ -82,6 +116,9 @@ defmodule Exoself do
     link_cerebral_units(tail_records, ids_npids)
   end
 
+  @doc"""
+  See link_sensor for explanation
+  """
   def link_actuator(r, tail_records, ids_npids) do
     a_id = r.id
     a_pid = :ets.lookup_element(ids_npids, a_id, 2)
@@ -93,6 +130,11 @@ defmodule Exoself do
     link_cerebral_units(tail_records, ids_npids)
   end
 
+  @doc"""
+  See link_sensor for explanation
+
+  Creates input_idps with all of the PID information and vector lengths.
+  """
   def link_neuron(r, tail_records, ids_npids) do
     n_id = r.id
     n_pid = :ets.lookup_element(ids_npids, n_id, 2)
@@ -106,6 +148,10 @@ defmodule Exoself do
     link_cerebral_units(tail_records, ids_npids)
   end
 
+  @doc"""
+  Sends cortex the master list - cortex, sensors, neurons, actuators - all of the PIDS, as well as
+  a counter placeholder which signals termination of the nn cycles.
+  """
   def link_cortex(cx, ids_npids) do
     cx_id = cx.id
     cx_pid = :ets.lookup_element(ids_npids, cx_id, 2)
@@ -118,6 +164,13 @@ defmodule Exoself do
     send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
   end
 
+  @doc"""
+  This enumerates over the list of neurons and corresponding weights, updating the input_idps for
+  each neuron in the genotype. It returns a the updated_genotype, with all the new weights (and later
+  on, the new connections, perhaps).
+  Recursively maps over a list of neurons, updating them one by one, using the update_input_idps and is_id
+  calls.
+  """
   def update_genotype(ids_npids, genotype, neuron_ids_nweights) do
     if length(neuron_ids_nweights) == 0 do
       genotype
@@ -133,6 +186,10 @@ defmodule Exoself do
     end
   end
 
+  @doc"""
+  With is_id, maps over the genotype. Each case in the list is fed to the is_id - if it matches
+  the neuron_id, it's input_idps is updated.
+  """
   def update_input_idps(genotype, neuron_id, new_input_idps) do
     Enum.map(genotype, fn x -> is_id(x, neuron_id, new_input_idps) end)
   end
@@ -145,6 +202,10 @@ defmodule Exoself do
     end
   end
 
+  @doc"""
+  Go between id and pid. Useful for input_idps which is just {neuron_id, vl},  rather than
+  {neuron_id, PID, vl}
+  """
   def convert_ids_to_pids(ids_npids, input_idps, acc) do
     case length(input_idps) do
       0 -> IO.puts "error in Exoself.convert_id_to_pids module"
