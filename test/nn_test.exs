@@ -9,4 +9,8 @@ defmodule NnTest do
   test "genotype" do
     TestGenotype.now
   end
+
+  test "exoself" do
+    Exoself.map("ffnn.txt")
+  end
 end

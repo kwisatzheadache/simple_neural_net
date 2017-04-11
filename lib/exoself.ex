@@ -4,17 +4,17 @@ defmodule Exoself do
 
   @doc """
   """
-  def map() do
-    map(ffnn)
-  end
+  # def map() do
+  #   map("ffnn")
+  # end
 
   def map(file_name) do
-    {:ok, genotype} = Genotype.read(file_name)
+    genotype = Genotype.read(file_name)
     spawn(Exoself, :map, [file_name, genotype])
   end
 
   def map(file_name, genotype) do
-    ids_npids = :ets.new(:ids_npids, [:set, :prive])
+    ids_npids = :ets.new(:ids_npids, [:set, :private])
     [cx | cerebral_units] = Genotype.read(file_name)
     sensor_ids = cx.sensor_ids
     actuator_ids = cx.actuator_ids
@@ -27,7 +27,7 @@ defmodule Exoself do
     link_cortex(cx, ids_npids)
     cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
     receive do
-      {cd_pid, :backup, neuron_ids_nweights} ->
+      {cx_pid, :backup, neuron_ids_nweights} ->
         u_genotype = Update.genotype(ids_npids, genotype, neuron_ids_nweights)
         {:ok, file} = File.open(file_name, :write)
         Enum.each(genotype, fn x -> IO.write(file, "#{x}") end)
@@ -125,8 +125,22 @@ defmodule Exoself do
       n = :lists.keyfind(n_id, 2, genotype)
       IO.puts "pidps: #{pidps}"
       updated_input_idps = convert_pidps_to_idps(ids_npids, pidps, [])
-      u_n = %{n | input_idps: updated_input_idps}
-      u_genotype = :lists.keyreplace(n_id, 2, genotype, u_n)
+      u_genotype = FindingKeys.by_id(genotype, n_id, updated_input_idps)
+      #u_n = %{n | input_idps: updated_input_idps}
+      #u_genotype = :lists.keyreplace(n_id, 2, genotype, u_n)
+      update_genotype(ids_npids, u_genotype, [])
+    end
+  end
+
+  def update_input_idps(genotype, neuron_id, new_input_idps) do
+    Enum.map(genotype, fn x -> is_id(x, neuron_id, new_input_idps) end)
+  end
+
+  def is_id(x, neuron_id, new_input_idps) do
+    if x.id == neuron_id do
+      %{x | input_idps: new_input_idps}
+    else
+      x
     end
   end
 
@@ -137,6 +151,16 @@ defmodule Exoself do
            :lists.reverse([bias | acc])
       _ -> [{id, weights} | fanin_idps] = input_idps
            convert_ids_to_pids(ids_npids, fanin_idps, [{:ets.lookup_element(ids_npids, id, 2), weights} | acc])
+    end
+  end
+
+  def convert_pidps_to_idps(ids_npids, pidps, acc) do
+    case length(acc)  do
+      0 -> IO.puts "error in Exoself.convert_pisps_to_idps module"
+      1 -> [bias] = pidps
+           :lists.reverse([{:bias, bias} | acc])
+      _ -> [{pid, weights} | input_pidps] = pidps
+           convert_pidps_to_idps(ids_npids, input_pidps, [{:ets.lookup_element(ids_npids, pid, 2), weights} | acc])
     end
   end
 

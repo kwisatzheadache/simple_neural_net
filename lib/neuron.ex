@@ -25,12 +25,12 @@ defmodule Neuron do
     {all_input_pidps, m_input_pidps} = input_pidps_info
     case length(all_input_pidps) do
       0 ->
-        output = Neuron.af(acc)
+        output = Neuron.tanh(acc)
         Send.list(output_pids, {self(), :forward, [output]})
         loop(id, cx_pid, af, {m_input_pidps, m_input_pidps}, output_pids, 0)
       1 ->
-        bias = all_input_pidps
-        output = Neuron.af(acc + bias)
+        [bias] = all_input_pidps
+        output = Neuron.tanh(acc + bias)
         Send.list(output_pids, {self(), :forward, [output]})
         loop(id, cx_pid, af, {m_input_pidps, m_input_pidps}, output_pids, 0)
       _ ->

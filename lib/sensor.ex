@@ -32,9 +32,13 @@ defmodule Sensor do
   Once the sync message is received, it creates a sensory vector from the sensor_name and vl. 
   """
   def loop(id, cx_pid, sensor_name, vl, fanout_pids) do
+    case sensor_name do
+      "rng" -> sensory_vector = Sensor.rng(vl)
+      _ -> IO.puts "sensor not supported"
+    end
     receive do
       {cx_pid, :sync} ->
-        sensory_vector =  Sensor.sensor_name(vl)
+        # sensory_vector =  Sensor.sensor_name(vl)
         Send.list(fanout_pids, {self(), :forward, sensory_vector})
         loop(id, cx_pid, sensor_name, vl, fanout_pids)
       {cx_pid, :terminate} ->
