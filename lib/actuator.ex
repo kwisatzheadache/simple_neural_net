@@ -27,7 +27,10 @@ defmodule Actuator do
 
   def loop(id, cx_pid, a_name, all_fanins, acc) do
     {pids, m_fanin_pids} = all_fanins
-    case pids do
+    case length(pids) do
+      0 -> Actuator.pts(:lists.reverse(acc))
+            send cx_pid, {self(), :sync}
+            loop(id, cx_pid, a_name, {m_fanin_pids, m_fanin_pids}, [])
 
       _ ->  [from_pid | fanin_pids] = pids
             receive do
@@ -37,15 +40,13 @@ defmodule Actuator do
                     :ok
             end
 
-      [] -> Actuator.a_name(:lists.reverse(acc))
-            send cx_pid, {self(), :sync}
-            loop(id, cx_pid, a_name, {m_fanin_pids, m_fanin_pids}, [])
 
     end
   end
 
   def pts(result) do
-    IO.puts"Actuator.pts(result): #{result}"
+    # IO.puts "Actuator.pts(result): #{result}"
+    IO.inspect result, label: pts(result)
   end
 end
 

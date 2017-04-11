@@ -26,11 +26,12 @@ defmodule Exoself do
     link_cerebral_units(cerebral_units, ids_npids)
     link_cortex(cx, ids_npids)
     cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
+    IO.inspect cx_pid, label: "cx_pid"
     receive do
       {cx_pid, :backup, neuron_ids_nweights} ->
-        u_genotype = Update.genotype(ids_npids, genotype, neuron_ids_nweights)
+        u_genotype = update_genotype(ids_npids, genotype, neuron_ids_nweights)
         {:ok, file} = File.open(file_name, :write)
-        Enum.each(genotype, fn x -> IO.write(file, "#{x}") end)
+        Enum.each(u_genotype, fn x -> IO.write(file, "#{x}") end)
         File.close(file_name)
         IO.puts "Finished updating to file: #{file_name}"
     end
@@ -60,9 +61,9 @@ defmodule Exoself do
     else
       [r | tail_records] = records
       case r.id do
-        {:sensor, id} -> link_sensor(r, tail_records, ids_npids)
-        {:actuator, id} -> link_actuator(r, tail_records, ids_npids)
-        {:neuron, id} -> link_neuron(r, tail_records, ids_npids)
+        {:sensor, _} -> link_sensor(r, tail_records, ids_npids)
+        {:actuator, _} -> link_actuator(r, tail_records, ids_npids)
+        {:neuron, _} -> link_neuron(r, tail_records, ids_npids)
         _ -> :ok
       end
     end
@@ -125,10 +126,10 @@ defmodule Exoself do
       n = :lists.keyfind(n_id, 2, genotype)
       IO.puts "pidps: #{pidps}"
       updated_input_idps = convert_pidps_to_idps(ids_npids, pidps, [])
-      u_genotype = FindingKeys.by_id(genotype, n_id, updated_input_idps)
+      u_genotype = update_input_idps(genotype, n_id, updated_input_idps)
       #u_n = %{n | input_idps: updated_input_idps}
       #u_genotype = :lists.keyreplace(n_id, 2, genotype, u_n)
-      update_genotype(ids_npids, u_genotype, [])
+      update_genotype(ids_npids, u_genotype, weights_ps)
     end
   end
 

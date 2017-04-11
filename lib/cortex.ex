@@ -34,7 +34,7 @@ defmodule Cortex do
                     # Send.list(s_pids, {self(), :terminate})
                     # Send.list(m_a_pids, {self(), :terminate})
                     # Send.list(n_pids, {self(), :terminate})
-                   # Enum.each(s_pids, fn x -> send x, {self(), :terminate} end)
+                    # Enum.each(s_pids, fn x -> send x, {self(), :terminate} end)
                     # Enum.each(m_a_pids, fn x -> send x, {self(), :terminate} end)
                     # Enum.each(n_pids, fn x -> send x, {self(), :terminate} end)
 
@@ -42,6 +42,11 @@ defmodule Cortex do
       {a_pids, m_a_pids} = a_and_m_pids
       length_a_pids = length(a_pids)
       case length_a_pids do
+          0 ->
+                    Send.list(s_pids, {self(), :sync}) 
+                    loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, steps - 1)
+                    IO.puts "counting #{steps}"
+
           _ ->
                     [a_pid | a_pids_leftover] = m_a_pids
                     receive do
@@ -54,10 +59,6 @@ defmodule Cortex do
                                               # Send.list(m_a_pids, {self(), :terminate})
                                               # Send.list(n_pids, {self(), :terminate})
                     end
-          0 ->
-                    Send.list(s_pids, {self(), :sync}) 
-                    loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, steps - 1)
-
       end
     end
   end
