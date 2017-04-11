@@ -11,6 +11,8 @@ To run a quick test of the app sofar, clone the repo, then do the following:
 
 `mix test`
 
+Be aware, it won't look like much is happening... yet.
+
 Alternatively, to create your own feed forward neural net, do this:
 
 `iex -S mix`
@@ -42,3 +44,7 @@ I've finished chapter 6.5 - the genotype constructor. Run the above code to
 give it a whirl. I'm not working on ch. 6.6 - phenotype matching. It's much
 harder than the genotype part. I will post executables when they're available.
 
+Update 4/10 - Chapter 6.6 is done. The mix test now constructs a genotype and a 
+corresponding phenotype. It runs quickly, doesn't look like it's doing much
+because it doesn't have a training algorithm yet. I also need to do docs.
+#
