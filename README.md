@@ -58,6 +58,8 @@ Exoself.map("simplestnn.txt")
 That will generate a genotype for a nn with [1,1] structure, two neurons in total and one sensor/actuator.
 The code runs fine, but then my terminal runs so slowly I can't really manipulate it at all. This is quite 
 unexpected - there should be only six or so processes in total, so I'm not sure what the issue might be.
+Breaking the `Exoself.map` call down shows that it works as intended, at least until the processes are spawned.
+
 ``` elixir
 Genotype.construct("simplestnn.txt", "rng", "pts", [1])
 ids_npids = :ets.new(:ids_npids, [:set, :private])
