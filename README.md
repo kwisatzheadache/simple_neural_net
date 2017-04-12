@@ -38,13 +38,46 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/nn](https://hexdocs.pm/nn).
 
-# Progress
+# Progress and Questions
 
-I've finished chapter 6.5 - the genotype constructor. Run the above code to
-give it a whirl. I'm not working on ch. 6.6 - phenotype matching. It's much
-harder than the genotype part. I will post executables when they're available.
+I've finished chapter 6.5 - the genotype constructor. 
 
 Update 4/10 - Chapter 6.6 is done. The mix test now constructs a genotype and a 
 corresponding phenotype. It runs quickly, doesn't look like it's doing much
 because it doesn't have a training algorithm yet. I also need to do docs.
+
+4/12 Question concerning performance.
+
+`iex -S mix`
+
+```elixir
+Genotype.construct("simplestnn.txt", "rng", "pts", [1])
+Exoself.map("simplestnn.txt")
+```
+
+That will generate a genotype for a nn with [1,1] structure, two neurons in total and one sensor/actuator.
+The code runs fine, but then my terminal runs so slowly I can't really manipulate it at all. This is quite 
+unexpected - there should be only six or so processes in total, so I'm not sure what the issue might be.
+``` elixir
+Genotype.construct("simplestnn.txt", "rng", "pts", [1])
+ids_npids = :ets.new(:ids_npids, [:set, :private])
+[cx | cerebral_units] = Genotype.read("simplestnn.txt")
+sensor_ids = cx.sensor_ids
+actuator_ids = cx.actuator_ids
+n_ids = cx.n_ids
+Exoself.spawn_cerebral_units(ids_npids, :cortex, [cx.id])
+Exoself.spawn_cerebral_units(ids_npids, :sensor, sensor_ids)
+Exoself.spawn_cerebral_units(ids_npids, :actuator, actuator_ids)
+Exoself.spawn_cerebral_units(ids_npids, :neuron, n_ids)
+```
+
+No problems up until this poing.
+
+```elixir
+Exoself.link_cerebral_units(cerebral_units, ids_npids)
+Exoself.link_cortex(cx, ids_npids)
+```
+
+See the PID's print the the REPL, but then it slows so much I can't do any tests with the code. Is my computer
+too slow?
 #
