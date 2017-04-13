@@ -17,27 +17,32 @@ defmodule Neuron do
   def loop(exoself_pid) do
     receive do
       {exoself_pid, {id, cx_pid, af, input_pidps, output_pids}} ->
+        IO.puts "neuron loop firing."
         loop(id, cx_pid, af, {input_pidps, input_pidps}, output_pids, 0)
     end
   end
 
   def loop(id, cx_pid, af, input_pidps_info, output_pids, acc) do
     {all_input_pidps, m_input_pidps} = input_pidps_info
+    IO.puts "neuron loop part two firing"
     case length(all_input_pidps) do
       0 ->
         output = Neuron.tanh(acc)
         Send.list(output_pids, {self(), :forward, [output]})
+        IO.puts "neuron acc = 0"
         loop(id, cx_pid, af, {m_input_pidps, m_input_pidps}, output_pids, 0)
       1 ->
         [bias] = all_input_pidps
         output = Neuron.tanh(acc + bias)
         Send.list(output_pids, {self(), :forward, [output]})
+        IO.puts "neuron acc = 1"
         loop(id, cx_pid, af, {m_input_pidps, m_input_pidps}, output_pids, 0)
       _ ->
         [{input_pid, weights} | input_pidps] = all_input_pidps
         receive do
           {input_pid, :forward, input} ->
            result = dot(input, weights, 0)
+            IO.puts "neuron acc = _"
             loop(id, cx_pid, af, {input_pidps, m_input_pidps}, output_pids, result + acc)
           {cx_pid, :get_backup} ->
             send cx_pid, {self(), id, m_input_pidps}

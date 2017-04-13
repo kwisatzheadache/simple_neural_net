@@ -24,6 +24,7 @@ defmodule Sensor do
   def loop(exoself_pid) do
     receive do
       {exoself_pid, {id, cx_pid, sensor_name, vl, fanout_pids}} ->
+        IO.puts "sensor firing"
         loop(id, cx_pid, sensor_name, vl, fanout_pids)
     end
   end

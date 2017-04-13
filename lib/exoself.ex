@@ -52,6 +52,7 @@ defmodule Exoself do
     link_cortex(cx, ids_npids)
     cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
     IO.inspect cx_pid, label: "cx_pid"
+    IO.inspect :ets.i(ids_npids)
     receive do
       {cx_pid, :backup, neuron_ids_nweights} ->
         u_genotype = update_genotype(ids_npids, genotype, neuron_ids_nweights)
@@ -64,6 +65,7 @@ defmodule Exoself do
 
   def spawn_cerebral_units(ids_npids, cerebral_unit_type, ids) do
     if length(ids) == 0 do
+      IO.puts "spawn_cerebral_units complete"
       :true
     else
       [id | tail_ids] =  ids
@@ -85,6 +87,7 @@ defmodule Exoself do
   """
   def link_cerebral_units(records, ids_npids) do
     if length(records) == 0 do
+      IO.puts "link_cerebral_units complete"
       :ok
     else
       [r | tail_records] = records
@@ -113,6 +116,7 @@ defmodule Exoself do
     fanout_ids = r.fanout_ids
     fanout_pids = Enum.map(fanout_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send s_pid, {self(), {s_id, cx_pid, s_name, r.vl, fanout_pids}}
+    IO.puts "link_sensor"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -127,6 +131,7 @@ defmodule Exoself do
     fanin_ids = r.fanin_ids
     fanin_pids = Enum.map(fanin_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send a_pid, {self(), {a_id, cx_pid, a_name, fanin_pids}}
+    IO.puts "link_actutator"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -145,6 +150,7 @@ defmodule Exoself do
     input_pidps = convert_ids_to_pids(ids_npids, input_idps, [])
     output_pids = Enum.map(output_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send n_pid, {self(), {n_id, cx_pid, af_name, input_pidps, output_pids}}
+    IO.puts "link_neurons"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -161,7 +167,7 @@ defmodule Exoself do
     s_pids = Enum.map(s_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     a_pids = Enum.map(a_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     n_pids = Enum.map(n_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)   
-    send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
+    #send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
   end
 
   @doc"""
