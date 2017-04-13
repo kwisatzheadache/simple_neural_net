@@ -39,7 +39,7 @@ defmodule Sensor do
     end
     receive do
       {cx_pid, :sync} ->
-        # sensory_vector =  Sensor.sensor_name(vl)
+        IO.puts "sensor received :sync signal line 42"
         Send.list(fanout_pids, {self(), :forward, sensory_vector})
         loop(id, cx_pid, sensor_name, vl, fanout_pids)
       {cx_pid, :terminate} ->

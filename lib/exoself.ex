@@ -167,7 +167,8 @@ defmodule Exoself do
     s_pids = Enum.map(s_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     a_pids = Enum.map(a_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     n_pids = Enum.map(n_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)   
-    #send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
+    IO.puts "cortex linking and sends"
+    send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
   end
 
   @doc"""

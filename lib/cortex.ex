@@ -17,8 +17,9 @@ defmodule Cortex do
   def loop(exoself_pid) do
     receive do
       {exoself_pid, {id, s_pids, a_pids, n_pids}, total_steps} ->
-        Enum.each(s_pids, fn x -> send x, {self(), :sync} end)
-        loop(id, exoself_pid, s_pids, {a_pids, a_pids}, n_pids, total_steps)
+         # This is the step which is slowing us down so much... 
+         Enum.each(s_pids, fn x -> send x, {self(), :sync} end)
+         loop(id, exoself_pid, s_pids, {a_pids, a_pids}, n_pids, 0) #total_steps)
     end
   end
 
@@ -26,17 +27,18 @@ defmodule Cortex do
   def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, steps) do
 
     if steps == 0 do
+      IO.puts "works up til here. cortex line 29"
       {a_pids, m_a_pids} = a_and_m_pids
                     IO.puts "Cortex is backing up and terminating #{id}"
                     neuron_ids_n_weights = get_backup(n_pids, [])
                     send exoself_pid, {self(), :backup, neuron_ids_n_weights}
                     Send.lists([s_pids, m_a_pids, n_pids], {self(), :terminate})
-                    # Send.list(s_pids, {self(), :terminate})
-                    # Send.list(m_a_pids, {self(), :terminate})
-                    # Send.list(n_pids, {self(), :terminate})
-                    # Enum.each(s_pids, fn x -> send x, {self(), :terminate} end)
-                    # Enum.each(m_a_pids, fn x -> send x, {self(), :terminate} end)
-                    # Enum.each(n_pids, fn x -> send x, {self(), :terminate} end)
+                    Send.list(s_pids, {self(), :terminate})
+                    Send.list(m_a_pids, {self(), :terminate})
+                    Send.list(n_pids, {self(), :terminate})
+                    Enum.each(s_pids, fn x -> send x, {self(), :terminate} end)
+                    Enum.each(m_a_pids, fn x -> send x, {self(), :terminate} end)
+                    Enum.each(n_pids, fn x -> send x, {self(), :terminate} end)
 
     else
       {a_pids, m_a_pids} = a_and_m_pids
@@ -49,9 +51,10 @@ defmodule Cortex do
 
           _ ->
                     [a_pid | a_pids_leftover] = m_a_pids
+          IO.puts "cortex firing line 52"
                     receive do
                             {a_pid, :sync} ->
-                                            loop(id, exoself_pid, s_pids, {a_pids_leftover, m_a_pids}, n_pids, steps)
+                                            loop(id, exoself_pid, s_pids, {a_pids_leftover, m_a_pids}, n_pids, steps - 1)
                             :terminate ->
                                               IO.puts"Cortex is terminating #{id}"
                                               Send.lists([s_pids, m_a_pids, n_pids], {self(), :terminate})
