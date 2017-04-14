@@ -29,7 +29,7 @@ defmodule Cortex do
     if steps == 0 do
       IO.puts "works up til here. cortex line 29"
       {a_pids, m_a_pids} = a_and_m_pids
-                    IO.puts "Cortex is backing up and terminating #{id}"
+                    IO.puts "Cortex is backing up and terminating "
                     neuron_ids_n_weights = get_backup(n_pids, [])
                     send exoself_pid, {self(), :backup, neuron_ids_n_weights}
                     Send.lists([s_pids, m_a_pids, n_pids], {self(), :terminate})

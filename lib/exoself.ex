@@ -56,9 +56,7 @@ defmodule Exoself do
     receive do
       {cx_pid, :backup, neuron_ids_nweights} ->
         u_genotype = update_genotype(ids_npids, genotype, neuron_ids_nweights)
-        {:ok, file} = File.open(file_name, :write)
-        Enum.each(u_genotype, fn x -> IO.write(file, "#{x}") end)
-        File.close(file_name)
+        File.write! file_name, :erlang.term_to_binary(u_genotype)
         IO.puts "Finished updating to file: #{file_name}"
     end
   end
@@ -184,11 +182,8 @@ defmodule Exoself do
     else
       [{n_id, pidps} | weights_ps] = neuron_ids_nweights
       n = :lists.keyfind(n_id, 2, genotype)
-      IO.puts "pidps: #{pidps}"
       updated_input_idps = convert_pidps_to_idps(ids_npids, pidps, [])
       u_genotype = update_input_idps(genotype, n_id, updated_input_idps)
-      #u_n = %{n | input_idps: updated_input_idps}
-      #u_genotype = :lists.keyreplace(n_id, 2, genotype, u_n)
       update_genotype(ids_npids, u_genotype, weights_ps)
     end
   end
@@ -214,6 +209,7 @@ defmodule Exoself do
   {neuron_id, PID, vl}
   """
   def convert_ids_to_pids(ids_npids, input_idps, acc) do
+    IO.inspect input_idps, label: "input_idps"
     case length(input_idps) do
       0 -> IO.puts "error in Exoself.convert_id_to_pids module"
       1 -> [{:bias, bias}] = input_idps
@@ -224,7 +220,7 @@ defmodule Exoself do
   end
 
   def convert_pidps_to_idps(ids_npids, pidps, acc) do
-    case length(acc)  do
+    case length(pidps)  do
       0 -> IO.puts "error in Exoself.convert_pisps_to_idps module"
       1 -> [bias] = pidps
            :lists.reverse([{:bias, bias} | acc])
