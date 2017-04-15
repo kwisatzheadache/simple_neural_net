@@ -229,4 +229,44 @@ defmodule Exoself do
     end
   end
 
+  def prep(file_name, genotype) do
+    genotype = Genotype.read(file_name)
+    {v1, v2, v3} = :random.seed
+    ids_npids = :ets.new(ids_npids, [:set, :private])
+    [cx | cerebral_units] = genotype
+    s_ids = cx.sensor_ids
+    a_ids = cx.actuator_ids
+    n_ids = cx.n_ids
+    scape_pids = spawn_scapes(ids_npids, genotype, s_ids, a_ids)
+    spawn_cerebral_units(ids_npids, :cortex, [cx.id])
+    spawn_cerebral_units(ids_npids, :sensor, s_ids)
+    spawn_cerebral_units(ids_npids, :neuron, n_ids)
+    spawn_cerebral_units(ids_npids, :actuator, a_ids)
+    link_sensors(genotype, s_ids, ids_npids)
+    link_actuators(genotype, a_ids, ids_npids)
+    link_neurons(genotype, n_ids, ids_npids)
+    {s_pids, n_pids, a_pids} = link_cortex(cx, ids_npids)
+    cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
+    loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, 0, 0, 0, 0, 1)
+  end
+
+  def loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, highest_fitness,
+    eval_acc, cycle_acc, time_acc, attempt) do
+    receive do
+      {cx_pid, eval_completed, fitness, cycles, time} ->
+        {u_highest_fitness, u_attempt} = case fitness > highest_fitness do
+                                           :true ->
+                                             Send.list(n_pids, {self(), weight_backup})
+                                             {fitness, 0}
+                                           :false ->
+                                             perturbed_n_pids = get(:perturbed)
+                                             Send.list(perturbed_n_pids, {self(), weight_restore})
+                                             {highest_fitness, attempt + 1}
+                                         end
+        case u_attempt >= max_attempts do
+        end
+    end
+    end
+  end
+
 end
