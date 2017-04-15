@@ -64,37 +64,37 @@ defmodule Genotype do
     File.read!(genotype) |> :erlang.binary_to_term
   end
 
-  def save_genotype(file_name, genotype) do
-    t_id = :ets.new(file_name, [:public, :set, {:keypos, 2}])
-    Enum.each(genotype, fn x -> :ets.insert(t_id, x) end)
-    :ets.tab2file(t_id, file_name)
-  end
+  # def save_genotype(file_name, genotype) do
+  #   t_id = :ets.new(file_name, [:public, :set, {:keypos, 2}])
+  #   Enum.each(genotype, fn x -> :ets.insert(t_id, x) end)
+  #   :ets.tab2file(t_id, file_name)
+  # end
 
-  def save_to_file(genotype, file_name) do
-    :ets.tab2file(genotype, file_name)
-  end
+  # def save_to_file(genotype, file_name) do
+  #   :ets.tab2file(genotype, file_name)
+  # end
 
-  def load_from_file(file_name) do
-    {:ok, t_id} = :ets.file2tab(file_name)
-    t_id
-  end
+  # def load_from_file(file_name) do
+  #   {:ok, t_id} = :ets.file2tab(file_name)
+  #   t_id
+  # end
 
-  def read(t_id, key) do
-    [r] = :ets.lookup(t_id, key)
-    IO.inspect(r)
-  end
+  # def read(t_id, key) do
+  #   [r] = :ets.lookup(t_id, key)
+  #   IO.inspect(r)
+  # end
 
-  def write(t_id, r) do
-    :ets.insert(t_id, r)
-  end
+  # def write(t_id, r) do
+  #   :ets.insert(t_id, r)
+  # end
 
-  def print(file_name) do
-    [cx | units] = read(file_name)
-    s_ids = cx.sensor_ids
-    n_ids = cx.n_ids
-    a_ids = cx.actuator_ids
-    ids = List.flatten([s_ids, n_ids, a_ids])
-    IO.inspect(cx, label: "cx")
-    Enum.each(ids, fn x -> IO.inspect(x) end)
-  end
+  # def print(file_name) do
+  #   [cx | units] = read(file_name)
+  #   s_ids = cx.sensor_ids
+  #   n_ids = cx.n_ids
+  #   a_ids = cx.actuator_ids
+  #   ids = List.flatten([s_ids, n_ids, a_ids])
+  #   IO.inspect(cx, label: "cx")
+  #   Enum.each(ids, fn x -> IO.inspect(x) end)
+  # end
 end

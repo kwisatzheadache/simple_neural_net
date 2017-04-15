@@ -3,7 +3,7 @@ defmodule Actuator do
   Actuators are the responsible for processing output from the NN.
   Currently supported actuators include "pts"... that's it. 
   """
-  defstruct id: nil, cx_id: nil, name: nil, vl: nil, fanin_ids: nil
+  defstruct id: nil, cx_id: nil, name: nil, scape: nil, vl: nil, fanin_ids: nil
 
   def create(actuator_name) do
     case actuator_name do
