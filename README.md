@@ -11,13 +11,21 @@ To run a quick test of the app sofar, clone the repo, then do the following:
 
 `mix test`
 
-Be aware, it won't look like much is happening... yet.
+This generates the genotype of a NN with 1 sensor, 1 actuator, and [1,3,3,3]
+neurons, named "henry.txt"
+
+The genotype is subsequently used to generate the neural net itself, complete
+with (in this case) 10 neurons. See there PID's and all their connectivity 
+printed out to the console. 
+
+The training module will be soon to follow.
 
 Alternatively, to create your own feed forward neural net, do this:
 
 `iex -S mix`
 ``` elixir
-ffnn = FFNN.create(your_list)
+FFNN.create(your_list)
+Exoself.map("ffnn.txt")
 ```
 
 Where `your_list` is the Layer Density list of your choosing. `[1,2,3]` or
@@ -47,39 +55,11 @@ corresponding phenotype. It runs quickly, doesn't look like it's doing much
 because it doesn't have a training algorithm yet. I also need to do docs.
 
 4/12 Question concerning performance.
+Solved the question. See previous commits.
 
-`iex -S mix`
-
-```elixir
-Genotype.construct("simplestnn.txt", "rng", "pts", [1])
-Exoself.map("simplestnn.txt")
-```
-
-That will generate a genotype for a nn with [1,1] structure, two neurons in total and one sensor/actuator.
-The code runs fine, but then my terminal runs so slowly I can't really manipulate it at all. This is quite 
-unexpected - there should be only six or so processes in total, so I'm not sure what the issue might be.
-Breaking the `Exoself.map` call down shows that it works as intended, at least until the processes are spawned.
-
-``` elixir
-Genotype.construct("simplestnn.txt", "rng", "pts", [1])
-ids_npids = :ets.new(:ids_npids, [:set, :private])
-[cx | cerebral_units] = Genotype.read("simplestnn.txt")
-sensor_ids = cx.sensor_ids
-actuator_ids = cx.actuator_ids
-n_ids = cx.n_ids
-Exoself.spawn_cerebral_units(ids_npids, :cortex, [cx.id])
-Exoself.spawn_cerebral_units(ids_npids, :sensor, sensor_ids)
-Exoself.spawn_cerebral_units(ids_npids, :actuator, actuator_ids)
-Exoself.spawn_cerebral_units(ids_npids, :neuron, n_ids)
-```
-
-No problems up until this poing.
-
-```elixir
-Exoself.link_cerebral_units(cerebral_units, ids_npids)
-Exoself.link_cortex(cx, ids_npids)
-```
-
-See the PID's print the the REPL, but then it slows so much I can't do any tests with the code. Is my computer
-too slow?
+4/15 Phenotype generator up and running.
+I had hoped to have the training module by this point, but it seems Mr. Sher
+had about five things he wanted to do before finishing the training module,
+so I've just cleaned up the functional Phenotype generator and put up a clean
+testfile. Run the `mix test` to see where we're at.
 #

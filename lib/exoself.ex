@@ -48,17 +48,20 @@ defmodule Exoself do
     spawn_cerebral_units(ids_npids, :sensor, sensor_ids)
     spawn_cerebral_units(ids_npids, :actuator, actuator_ids)
     spawn_cerebral_units(ids_npids, :neuron, n_ids)
+    IO.puts "cortex and cerebral units spawned"
     link_cerebral_units(cerebral_units, ids_npids)
     link_cortex(cx, ids_npids)
     cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
     IO.inspect cx_pid, label: "cx_pid"
-    IO.inspect :ets.i(ids_npids)
+    IO.puts "the table of ids and pids"
+    IO.inspect :ets.i(ids_npids), label: "the table of ids and pids"
     receive do
       {cx_pid, :backup, neuron_ids_nweights} ->
         u_genotype = update_genotype(ids_npids, genotype, neuron_ids_nweights)
         File.write! file_name, :erlang.term_to_binary(u_genotype)
         IO.puts "Finished updating to file: #{file_name}"
     end
+    IO.puts "Your neural net, #{file_name} has #{length(n_ids)} neurons"
   end
 
   def spawn_cerebral_units(ids_npids, cerebral_unit_type, ids) do
@@ -68,13 +71,9 @@ defmodule Exoself do
       [id | tail_ids] =  ids
       pid = case cerebral_unit_type do
               :cortex -> Cortex.generate(self(), node())
-                IO.puts "Cortex spawned"
               :neuron -> Neuron.generate(self(), node())
-                IO.puts "Neurons spawned"
               :actuator -> Actuator.generate(self(), node())
-                IO.puts "Actuators spawned"
               :sensor -> Sensor.generate(self(), node())
-                IO.puts "Sensors spawned"
               _ -> IO.puts "error in spawn_cerebral_units function call"
             end
       :ets.insert(ids_npids, {id, pid})
@@ -88,16 +87,17 @@ defmodule Exoself do
   """
   def link_cerebral_units(records, ids_npids) do
     if length(records) == 0 do
+      IO.puts "cerebral units linked"
       :ok
     else
       [r | tail_records] = records
       case r.id do
         {:sensor, _} -> link_sensor(r, tail_records, ids_npids)
-          IO.puts "Sensors linked"
+          IO.puts "sensor linked"
         {:actuator, _} -> link_actuator(r, tail_records, ids_npids)
-          IO.puts "Actuators linked"
+          IO.puts "actuator linked"
         {:neuron, _} -> link_neuron(r, tail_records, ids_npids)
-          IO.puts "Neurons linked"
+          IO.puts "neurons linked"
         _ -> :ok
       end
     end
@@ -133,6 +133,7 @@ defmodule Exoself do
     fanin_ids = r.fanin_ids
     fanin_pids = Enum.map(fanin_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send a_pid, {self(), {a_id, cx_pid, a_name, fanin_pids}}
+    IO.puts "actutator linked"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -167,7 +168,7 @@ defmodule Exoself do
     s_pids = Enum.map(s_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     a_pids = Enum.map(a_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     n_pids = Enum.map(n_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)   
-    IO.puts "cortex linked and transmitting"
+    IO.puts "cortex linking and sends"
     send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
   end
 
