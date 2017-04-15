@@ -46,13 +46,9 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/nn](https://hexdocs.pm/nn).
 
-# Progress and Questions
+# Progress and Questions 
 
-I've finished chapter 6.5 - the genotype constructor. 
-
-Update 4/10 - Chapter 6.6 is done. The mix test now constructs a genotype and a 
-corresponding phenotype. It runs quickly, doesn't look like it's doing much
-because it doesn't have a training algorithm yet. I also need to do docs.
+Update 4/10 - Genotype constructor completed.
 
 4/12 Question concerning performance.
 Solved the question. See previous commits.
