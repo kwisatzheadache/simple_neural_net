@@ -63,15 +63,18 @@ defmodule Exoself do
 
   def spawn_cerebral_units(ids_npids, cerebral_unit_type, ids) do
     if length(ids) == 0 do
-      IO.puts "spawn_cerebral_units complete"
       :true
     else
       [id | tail_ids] =  ids
       pid = case cerebral_unit_type do
               :cortex -> Cortex.generate(self(), node())
+                IO.puts "Cortex spawned"
               :neuron -> Neuron.generate(self(), node())
+                IO.puts "Neurons spawned"
               :actuator -> Actuator.generate(self(), node())
+                IO.puts "Actuators spawned"
               :sensor -> Sensor.generate(self(), node())
+                IO.puts "Sensors spawned"
               _ -> IO.puts "error in spawn_cerebral_units function call"
             end
       :ets.insert(ids_npids, {id, pid})
@@ -85,14 +88,16 @@ defmodule Exoself do
   """
   def link_cerebral_units(records, ids_npids) do
     if length(records) == 0 do
-      IO.puts "link_cerebral_units complete"
       :ok
     else
       [r | tail_records] = records
       case r.id do
         {:sensor, _} -> link_sensor(r, tail_records, ids_npids)
+          IO.puts "Sensors linked"
         {:actuator, _} -> link_actuator(r, tail_records, ids_npids)
+          IO.puts "Actuators linked"
         {:neuron, _} -> link_neuron(r, tail_records, ids_npids)
+          IO.puts "Neurons linked"
         _ -> :ok
       end
     end
@@ -114,7 +119,6 @@ defmodule Exoself do
     fanout_ids = r.fanout_ids
     fanout_pids = Enum.map(fanout_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send s_pid, {self(), {s_id, cx_pid, s_name, r.vl, fanout_pids}}
-    IO.puts "link_sensor"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -129,7 +133,6 @@ defmodule Exoself do
     fanin_ids = r.fanin_ids
     fanin_pids = Enum.map(fanin_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send a_pid, {self(), {a_id, cx_pid, a_name, fanin_pids}}
-    IO.puts "link_actutator"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -148,7 +151,6 @@ defmodule Exoself do
     input_pidps = convert_ids_to_pids(ids_npids, input_idps, [])
     output_pids = Enum.map(output_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     send n_pid, {self(), {n_id, cx_pid, af_name, input_pidps, output_pids}}
-    IO.puts "link_neurons"
     link_cerebral_units(tail_records, ids_npids)
   end
 
@@ -165,7 +167,7 @@ defmodule Exoself do
     s_pids = Enum.map(s_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     a_pids = Enum.map(a_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)
     n_pids = Enum.map(n_ids, fn x -> :ets.lookup_element(ids_npids, x, 2) end)   
-    IO.puts "cortex linking and sends"
+    IO.puts "cortex linked and transmitting"
     send cx_pid, {self(), {cx_id, s_pids, a_pids, n_pids}, 1000}
   end
 
@@ -209,7 +211,6 @@ defmodule Exoself do
   {neuron_id, PID, vl}
   """
   def convert_ids_to_pids(ids_npids, input_idps, acc) do
-    IO.inspect input_idps, label: "input_idps"
     case length(input_idps) do
       0 -> IO.puts "error in Exoself.convert_id_to_pids module"
       1 -> [{:bias, bias}] = input_idps
