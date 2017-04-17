@@ -3,16 +3,21 @@ defmodule Cortex do
   @moduledoc """
   The cortex syncronizes the NN so that each iteration is happens at the right time. It sends the initialization signals to the sensor and receives the processed output from the actuator.
   """
-  defstruct id: nil, sensor_ids: [], actuator_ids: [], n_ids: []
+  defstruct id: nil, sensor_ids: [], actuator_ids: [], n_ids: [],
+    exoself_pid: nil, s_pids: nil, n_pids: nil, a_pids: nil, cycle_acc: 0, fitness_acc: 0,
+    endflag: 0, status: nil
 
   def create(cx_id, s_ids, a_ids, n_ids) do
     %Cortex{id: cx_id, sensor_ids: s_ids, actuator_ids: a_ids, n_ids: n_ids}
   end
 
-  def generate(exoself_pid, node) do
+  def generate(exoself_pid, node, :loop) do
     Node.spawn(node, Cortex, :loop, [exoself_pid])
   end
 
+  def generate(exoself_pid, node) do
+    Node.spawn(node, Cortex, :prep, [exoself_pid])
+  end
   # loop/1
   def loop(exoself_pid) do
     receive do
@@ -80,6 +85,19 @@ defmodule Cortex do
             end
      end
    end
+
+  def prep(exoself_pid) do
+    {v1, v2, v3} = :random.seed
+    receive do
+      {exoself_pid, p_id, id, s_pids, n_pids, a_pids} ->
+        Process.put(:start_time, now())
+        Send.list(s_pids, {self(), :sync})
+        loop(id, exoself_pid, s_pids, {a_pids, a_pids}, n_pids, 1, 0, 0, :active)
+    end
+  end
+
+  def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, cycle_acc, fitness_acc, h_f_acc, :active) do
+  end
 
 end
 
