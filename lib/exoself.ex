@@ -231,75 +231,80 @@ defmodule Exoself do
     end
   end
 
-  # def prep(file_name, genotype) do
-  #   genotype = Genotype.read(file_name)
-  #   {v1, v2, v3} = :random.seed
-  #   ids_npids = :ets.new(:ids_npids, [:set, :private])
-  #   [cx | cerebral_units] = genotype
-  #   s_ids = cx.sensor_ids
-  #   a_ids = cx.actuator_ids
-  #   n_ids = cx.n_ids
-  #   scape_pids = spawn_scapes(ids_npids, genotype, s_ids, a_ids)
-  #   spawn_cerebral_units(ids_npids, :cortex, [cx.id])
-  #   spawn_cerebral_units(ids_npids, :sensor, s_ids)
-  #   spawn_cerebral_units(ids_npids, :neuron, n_ids)
-  #   spawn_cerebral_units(ids_npids, :actuator, a_ids)
-  #   link_sensors(genotype, s_ids, ids_npids)
-  #   link_actuators(genotype, a_ids, ids_npids)
-  #   link_neurons(genotype, n_ids, ids_npids)
-  #   {s_pids, n_pids, a_pids} = link_cortex(cx, ids_npids)
-  #   cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
-  #   loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, 0, 0, 0, 0, 1)
-  # end
+  def prep(file_name, genotype) do
+    genotype = Genotype.read(file_name)
+    {v1, v2, v3} = :random.seed
+    ids_npids = :ets.new(:ids_npids, [:set, :private])
+    [cx | cerebral_units] = genotype
+    s_ids = cx.sensor_ids
+    a_ids = cx.actuator_ids
+    n_ids = cx.n_ids
+    scape_pids = spawn_scapes(ids_npids, genotype, s_ids, a_ids)
+    spawn_cerebral_units(ids_npids, :cortex, [cx.id])
+    spawn_cerebral_units(ids_npids, :sensor, s_ids)
+    spawn_cerebral_units(ids_npids, :neuron, n_ids)
+    spawn_cerebral_units(ids_npids, :actuator, a_ids)
+    link_cerebral_units(ids_npids, List.flatten([s_ids, a_ids, n_ids]))
+    # link_sensors(genotype, s_ids, ids_npids)
+    # link_actuators(genotype, a_ids, ids_npids)
+    # link_neurons(genotype, n_ids, ids_npids)
+    {s_pids, n_pids, a_pids} = link_cortex(cx, ids_npids)
+    cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
+    loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, 0, 0, 0, 0, 1)
+  end
 
-  # def loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, highest_fitness,
-  #   eval_acc, cycle_acc, time_acc, attempt) do
-  #   receive do
-  #     {cx_pid, eval_completed, fitness, cycles, time} ->
-  #       {u_highest_fitness, u_attempt} = case fitness > highest_fitness do
-  #                                          :true ->
-  #                                            Send.list(n_pids, {self(), weight_backup})
-  #                                            {fitness, 0}
-  #                                          :false ->
-  #                                            perturbed_n_pids = get(:perturbed)
-  #                                            Send.list(perturbed_n_pids, {self(), weight_restore})
-  #                                            {highest_fitness, attempt + 1}
-  #                                        end
-  #       case u_attempt >= Trainer.max_attempts do
-  #         :true -> IO.puts "end training"
-  #           u_cycle_acc = cycle_acc + cycles
-  #           u_time_acc = time_acc + time_acc
-  #           backup_genotype(file_name, ids_npids, genotype, n_pids)
-  #           terminate_phenotype(cx_pid, s_pids, n_pids, a_pids, scape_pids)
-  #           IO.puts "cortext finished training. genotype has been backed up. fitness #{u_highest_fitness}"
-  #           case :global.whereis_name(:trainer) do
-  #             :undefined ->
-  #               :ok
-  #             p_id ->
-  #               send p_id, {self(), u_highest_fitness, eval_acc, u_cycle_acc, u_time_acc}
-  #           end
-  #         :false -> IO.puts "continue training"
-  #           tot_neurons = length(n_pids)
-  #           mp = 1/(:math.sqrt(tot_neurons))
-  #           perturb_n_pids = for x <- n_pids, :rand.uniform() < 0.5, do: x 
-  #           put(:perturbed, perturb_n_pids)
-  #           Send.list(perturb_n_pids, {self(), :weight_perturb})
-  #           send cx_pid, {self(), :reactivate}
-  #           loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, u_highest_fitness,
-  #                eval_acc + 1, cycle_acc + cycles, time_acc + time, u_attempt)
-  #       end
-  #   end
-  # end
+  def loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, highest_fitness,
+    eval_acc, cycle_acc, time_acc, attempt) do
+    receive do
+      {cx_pid, eval_completed, fitness, cycles, time} ->
+        {u_highest_fitness, u_attempt} = case fitness > highest_fitness do
+                                           :true ->
+                                             Send.list(n_pids, {self(), :weight_backup})
+                                             {fitness, 0}
+                                           :false ->
+                                             perturbed_n_pids = Process.get(:perturbed)
+                                             Send.list(perturbed_n_pids, {self(), :weight_restore})
+                                             {highest_fitness, attempt + 1}
+                                         end
+        case u_attempt >= Trainer.max_attempts do
+          :true -> IO.puts "end training"
+            u_cycle_acc = cycle_acc + cycles
+            u_time_acc = time_acc + time_acc
+            Genotype.write_to_file(genotype, file_name)
+            #backup_genotype(file_name, ids_npids, genotype, n_pids)
+            terminate_phenotype([cx_pid, s_pids, n_pids, a_pids, scape_pids])
+            IO.puts "cortext finished training. genotype has been backed up. fitness #{u_highest_fitness}"
+            case :global.whereis_name(:trainer) do
+              :undefined ->
+                :ok
+              p_id ->
+                send p_id, {self(), u_highest_fitness, eval_acc, u_cycle_acc, u_time_acc}
+            end
+          :false -> IO.puts "continue training"
+            tot_neurons = length(n_pids)
+            mp = 1/(:math.sqrt(tot_neurons))
+            perturb_n_pids = for x <- n_pids, :rand.uniform() < 0.5, do: x 
+            Process.put(:perturbed, perturb_n_pids)
+            Send.list(perturb_n_pids, {self(), :weight_perturb})
+            send cx_pid, {self(), :reactivate}
+            loop(file_name, genotype, ids_npids, cx_pid, s_pids, n_pids, a_pids, scape_pids, u_highest_fitness,
+                 eval_acc + 1, cycle_acc + cycles, time_acc + time, u_attempt)
+        end
+    end
+  end
 
-  # def spawn_scapes(ids_npids, genotype, s_ids, a_ids) do
-  #   s_scapes = for x <- s_ids, do: (Genotype.read(genotype, x).scape)
-  #   a_scapes = for x <- a_ids, do: (Genotype.read(genotype, x).scape)
-  #   unique_scapes = s_scapes ++ (a_scapes -- s_scapes)
-  #   sn_tuples = for x, :private <- unique_scapes, do: Scape.gen(self(), node(), x)
-  #   for pid, scape_name <- sn_tuples, do: :ets.insert(ids_npids, {scape_name, pid})
-  #   for pid, scape_name <- sn_tuples, do: :ets.insert(ids_npids, {pid, scape_name})
-  #   for pid, scape_name <- sn_tuples, do: send pid, {self(), scape_name}
-  #   for pid, scape_name <- sn_tuples, do: pid
-  # end
+  def terminate_phenotype(list) do
+    Send.lists(list, {self(), :terminate})
+  end
+  def spawn_scapes(ids_npids, genotype, s_ids, a_ids) do
+    s_scapes = for x <- s_ids, do: (Genotype.read(genotype, x).scape)
+    a_scapes = for x <- a_ids, do: (Genotype.read(genotype, x).scape)
+    unique_scapes = s_scapes ++ (a_scapes -- s_scapes)
+    sn_tuples = for {:private, x} <- unique_scapes, do: Scape.gen(self(), node(), x)
+    for {pid, scape_name} <- sn_tuples, do: :ets.insert(ids_npids, {scape_name, pid})
+    for {pid, scape_name} <- sn_tuples, do: :ets.insert(ids_npids, {pid, scape_name})
+    for {pid, scape_name} <- sn_tuples, do: send pid, {self(), scape_name}
+    for {pid, scape_name} <- sn_tuples, do: pid
+  end
 end
 
