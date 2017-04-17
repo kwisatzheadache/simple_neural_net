@@ -90,14 +90,50 @@ defmodule Cortex do
     {v1, v2, v3} = :random.seed
     receive do
       {exoself_pid, p_id, id, s_pids, n_pids, a_pids} ->
-        Process.put(:start_time, now())
+        Process.put(:start_time, :timer.now())
         Send.list(s_pids, {self(), :sync})
         loop(id, exoself_pid, s_pids, {a_pids, a_pids}, n_pids, 1, 0, 0, :active)
     end
   end
 
-  def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, cycle_acc, fitness_acc, h_f_acc, :active) do
+  def loop(id, exoself_pid, s_pids, a_and_m_pids, n_pids, cycle_acc, fitness_acc, h_f_acc, status) do
+    case status do
+      :active -> 
+          {all_a_pids, m_a_pids} = a_and_m_pids
+          [a_pid | a_pids] = all_a_pids
+          case all_a_pids do
+            [] -> if h_f_acc > 0 do
+                    #Organism finished evaluation
+                    time_dif = :timer.now_diff(:timer.now(), Process.get(:start_time))
+                    send exoself_pid, {self(), :evaluation_completed, fitness_acc, cycle_acc, time_dif}
+                    loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, cycle_acc, fitness_acc, h_f_acc, :inactive)
+                  else
+                    Send.list(s_pids, {self(), :sync})
+                    loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, cycle_acc + 1, fitness_acc, h_f_acc, :active)
+                  end
+            _ ->
+              receive do
+                {a_pid, :sync, fitness, halt_flag} ->
+                  loop(id, exoself_pid, s_pids, {a_pids, m_a_pids}, n_pids, cycle_acc, fitness_acc + fitness,
+                    h_f_acc + halt_flag, :active)
+                :terminate ->
+                  IO.puts "cortex: #{id} is terminating"
+                  Send.lists([s_pids, m_a_pids, n_pids], {self(), :terminate})
+              end
+          end
+      :inactive ->
+          {all_a_pids, m_a_pids} = a_and_m_pids
+        receive do
+          {exoself_pid, :reactivate} ->
+            Process.put(:start_time, :timer.now())
+            Send.list(s_pids, {self(), :sync})
+            loop(id, exoself_pid, s_pids, {m_a_pids, m_a_pids}, n_pids, 1, 0, 0, :active)
+          {exoself_pid, :terminate} ->
+            :ok
+        end
+    end
   end
 
 end
+
 
