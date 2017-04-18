@@ -9,7 +9,7 @@ defmodule Exoself do
   counter-intuitive to send the same information twice, but this is so that when the map/2 is called
   later with a source genotype and an alternate, the same process will be enacted.
   """
-    def map(file_name) do
+  def map(file_name) do
     genotype = Genotype.read(file_name)
     spawn(Exoself, :map, [file_name, genotype])
   end

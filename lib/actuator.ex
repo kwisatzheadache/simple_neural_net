@@ -9,6 +9,8 @@ defmodule Actuator do
     case actuator_name do
       "pts" ->
              %Actuator{id: {:actuator, Generate.id()}, name: "pts", vl: 1}
+      :xor_mimic ->
+             %Actuator{id: {:actuator, Generate.id()}, name: :xor_mimic, vl: 1}
       :err ->
              IO.puts "system does not yet support an actuator byt the name: #{inspect actuator_name}."
     end
@@ -41,6 +43,14 @@ defmodule Actuator do
             end
 
 
+    end
+  end
+
+  def xor_send_output(output, scape) do
+    send scape, {self(), :action, output}
+    receive do
+      {scape, fitness, halt_flag} ->
+        {fitness, halt_flag}
     end
   end
 

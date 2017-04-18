@@ -12,6 +12,8 @@ defmodule Sensor do
     case sensor_name do
       "rng" ->
              %Sensor{id: {:sensor, Generate.id()}, name: "rng", vl: 2}
+      :xor_mimic ->
+             %Sensor{id: {:sensor, Generate.id()}, name: :xor_mimic, vl: 2}
       _ ->
         IO.puts "System does not yes support a sensor by the name:#{inspect sensor_name} "
     end
@@ -58,6 +60,17 @@ defmodule Sensor do
     case vl do
       0 -> acc
       _ -> rng(vl - 1, [:rand.uniform() | acc])
+    end
+  end
+
+  def xor_getinput(vl, scape) do
+    send scape, {self(), :sense}
+    receive do
+      {scape, :percept, sensory_vector} ->
+        case length(sensory_vector) == vl do
+          :true -> sensory_vector
+          :false -> IO.puts "error in Sensor.xor_sim/2"
+        end
     end
   end
 

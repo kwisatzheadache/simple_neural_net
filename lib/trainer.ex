@@ -20,8 +20,8 @@ defmodule Trainer do
   end
 
   def go(morphology, hld, max_attempts, eval_limit, fitness_target) do
-    p_id = spawn(:trainer, :loop, [morphology, hld, fitness_target, {1, max_attempts},
-                                  {0, eval_limit}, {0, :best}, :experimental, [], []])
+    p_id = spawn(Trainer, :loop, [morphology, hld, fitness_target, {1, max_attempts},
+                                  {0, eval_limit}, {0, :best}, "experimental", [], []])
     :global.register_name(:trainer, p_id)
   end
 
@@ -33,7 +33,10 @@ defmodule Trainer do
 
   def loop(morphology, hld, ft, {attempt_acc, ma}, {eval_acc, eval_limit}, {best_fitness, best_g},
    exp_g, c_acc, t_acc) do
-    Genotype.construct(exp_g, morphology, hld)
+    IO.inspect exp_g
+    IO.inspect morphology
+    IO.inspect hld
+    Genotype.construct(exp_g, morphology, morphology, hld)
     agent_pid = Exoself.map(exp_g)
     receive do
       {agent_pid, fitness, evals, cycles, time} ->
