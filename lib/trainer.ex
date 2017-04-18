@@ -22,6 +22,8 @@ defmodule Trainer do
   def go(morphology, hld, max_attempts, eval_limit, fitness_target) do
     p_id = spawn(Trainer, :loop, [morphology, hld, fitness_target, {1, max_attempts},
                                   {0, eval_limit}, {0, :best}, "experimental", [], []])
+    IO.puts "line 25, trainer.ex"
+    IO.inspect p_id, label: "trainer pid"
     :global.register_name(:trainer, p_id)
   end
 

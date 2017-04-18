@@ -53,15 +53,12 @@ defmodule Exoself do
     link_cortex(cx, ids_npids)
     cx_pid = :ets.lookup_element(ids_npids, cx.id, 2)
     IO.inspect cx_pid, label: "cx_pid"
-    IO.puts "the table of ids and pids"
-    IO.inspect :ets.i(ids_npids), label: "the table of ids and pids"
     receive do
       {cx_pid, :backup, neuron_ids_nweights} ->
         u_genotype = update_genotype(ids_npids, genotype, neuron_ids_nweights)
         File.write! file_name, :erlang.term_to_binary(u_genotype)
         IO.puts "Finished updating to file: #{file_name}"
     end
-    IO.puts "Your neural net, #{file_name} has #{length(n_ids)} neurons"
   end
 
   def spawn_cerebral_units(ids_npids, cerebral_unit_type, ids) do

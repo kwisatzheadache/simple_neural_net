@@ -36,9 +36,7 @@ defmodule Genotype do
       #id lists for the first layer and last layers
       fl_n_ids = Enum.map(input_layer, fn x -> x.id end)
       ll_n_ids = Enum.map(output_layer, fn x -> x.id end)
-      IO.inspect neurons
       n_ids = Enum.map(flat_neurons, fn x -> x.id end)
-      IO.inspect n_ids
       #provide cortex and connection info to sensor
       sensor =  %{s | cx_id: cx_id, fanout_ids: fl_n_ids}
       #provide cortex and connection info actuator
