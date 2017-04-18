@@ -58,4 +58,8 @@ I had hoped to have the training module by this point, but it seems Mr. Sher
 had about five things he wanted to do before finishing the training module,
 so I've just cleaned up the functional Phenotype generator and put up a clean
 testfile. Run the `mix test` to see where we're at.
+
+4/18 Learning how to rewrite EVERYTHING with macros, so that it actually 
+trains. Might be a few days before there's another major breakthrough. 
+`mix test` working again.
 #
