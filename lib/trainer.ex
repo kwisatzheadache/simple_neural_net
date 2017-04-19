@@ -1,6 +1,7 @@
 defmodule Trainer do
   @moduledoc"""
   """
+  import MacroTest
 
   defmacro max_Attempts do
     5

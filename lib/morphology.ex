@@ -1,4 +1,11 @@
 defmodule Morphology do
+  
+  defmacro morphology(morph, interactor) do
+    IO.puts "MacroTest loadee"
+    quote do
+      unquote({{:., [], [{:__aliases__, [alias: false], [:Morphology]}, morph]}, [], [interactor]})
+    end
+  end
 
   def xor_mimic(interactor) do
     case interactor do

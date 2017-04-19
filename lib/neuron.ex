@@ -122,7 +122,7 @@ defmodule Neuron do
     cond do
       val < min -> min
       val > max -> max
-      true -> val
+      :true -> val
     end
   end
 
