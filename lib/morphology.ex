@@ -2,9 +2,14 @@ defmodule Morphology do
   
   defmacro morphology(morph, interactor) do
     IO.puts "MacroTest loadee"
-    quote do
-      unquote({{:., [], [{:__aliases__, [alias: false], [:Morphology]}, morph]}, [], [interactor]})
-    end
+    # newcode = quote do:
+    # unquote({{:., [], [{:__aliases__, [alias: false], [:Morphology]},
+    #                    quote do: morph end]}, [], [quote do: interactor end]})
+    # end
+  end
+
+  def sensor_name(_) do
+    IO.puts "error in MacroTest macro"
   end
 
   def xor_mimic(interactor) do
