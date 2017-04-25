@@ -62,4 +62,6 @@ testfile. Run the `mix test` to see where we're at.
 4/18 Learning how to rewrite EVERYTHING with macros, so that it actually 
 trains. Might be a few days before there's another major breakthrough. 
 `mix test` working again.
+
+4/25 Working with macros. Call `Sensor.create(:xor_mimic)` and begin troubleshooting.
 #
