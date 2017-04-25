@@ -4,14 +4,30 @@ defmodule Sensor do
   Currently, the only supported sensor is "rng"
   """
   defstruct id: nil, cx_id: nil, name: nil, scape: nil, vl: nil, fanout_ids: nil
-  # import Morphology
-  # import MacroTest
+  defmacro type(sensor_name) do
+    case is_atom(sensor_name) do
+      :true -> IO.puts "Sensor.type loaded"
+              #> quote do Sensor.create end
+              #> {{:., [], [{:__aliases__, [alias: false], [:Sensor]}, :create]}, [], []}
+              #  So, we should be able to substitue sensor_name for :create. Should require that sensor_name
+              #  be an atom, while we're at it.
+              #> quote do IO.puts "hello"
+              #> {{:., [], [{:__aliases__, [alias: false], [:IO]}, :puts]}, [], ["hello"]}
+              #  Perhaps I'm looking for Code.eval_quoted(ast_expression)
+              ast = {{:., [], [{:__aliases__, [alias: false], [:Morphology]}, sensor_name]}, [], [:sensor]}
+              IO.puts Macro.to_string(ast)
+              Code.eval_quoted(ast)
+      _ -> "sensor must be an atom"
+    end
+  end
 
   @doc """
   Create a sensor with the specified name. Name must be chosen from the list of eligible sensors. In this case, only rng.
   """
   def create(sensor_name) do
+  #  need Macro to take the sensor_ame and generate the appropriate scape-related sensor.
   #   MacroTest.morphology(sensor_name, :sensor)
+    Sensor.type(sensor_name)
   end
 
   def generate(exoself_pid, node) do

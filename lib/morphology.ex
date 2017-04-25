@@ -1,13 +1,8 @@
 defmodule Morphology do
-  
-  defmacro morphology(morph, interactor) do
-    IO.puts "MacroTest loadee"
-    # newcode = quote do:
-    # unquote({{:., [], [{:__aliases__, [alias: false], [:Morphology]},
-    #                    quote do: morph end]}, [], [quote do: interactor end]})
-    # end
-  end
-
+@moduledoc"""
+Morphology creates a sensor or actuator, based upon the scape. It assigns
+the scape name to the sensor/actuator struct.
+"""
   def sensor_name(_) do
     IO.puts "error in MacroTest macro"
   end
