@@ -4,26 +4,28 @@ defmodule Sensor do
   Currently, the only supported sensor is "rng"
   """
   defstruct id: nil, cx_id: nil, name: nil, scape: nil, vl: nil, fanout_ids: nil
-  import MacroTest
-  # defmacro type(sensor_name) do
-  #   IO.inspect sensor_name, label: "sensor_name"
-  #   {name, location, _} = sensor_name
-  #   IO.inspect name, label: "name"
-  #   case is_atom(name) do
-  #     true -> IO.puts "Sensor.type loaded"
-  #             #> quote do Sensor.create end
-  #             #> {{:., [], [{:__aliases__, [alias: false], [:Sensor]}, :create]}, [], []}
-  #             #  So, we should be able to substitue sensor_name for :create. Should require that sensor_name
-  #             #  be an atom, while we're at it.
-  #             #> quote do IO.puts "hello"
-  #             #> {{:., [], [{:__aliases__, [alias: false], [:IO]}, :puts]}, [], ["hello"]}
-  #             #  Perhaps I'm looking for Code.eval_quoted(ast_expression)
-  #             ast = {{:., [], [{:__aliases__, [alias: false], [:Morphology]}, name]}, [], [:sensor]}
-  #             IO.puts Macro.to_string(ast)
-  #             Code.eval_quoted(ast)
-  #     false -> "sensor must be an atom"
-  #   end
-  # end
+  # require MacroTest
+  defmacro type(sensor_name) do
+    IO.inspect sensor_name, label: "sensor_name"
+    rename = Macro.var(sensor_name, nil)
+    {name, _, _} = rename
+    # {name, location, _} = sensor_name
+    IO.inspect name, label: "name"
+    case is_atom(name) do
+      true -> IO.puts "Sensor.type loaded"
+              #> quote do Sensor.create end
+              #> {{:., [], [{:__aliases__, [alias: false], [:Sensor]}, :create]}, [], []}
+              #  So, we should be able to substitue sensor_name for :create. Should require that sensor_name
+              #  be an atom, while we're at it.
+              #> quote do IO.puts "hello"
+              #> {{:., [], [{:__aliases__, [alias: false], [:IO]}, :puts]}, [], ["hello"]}
+              #  Perhaps I'm looking for Code.eval_quoted(ast_expression)
+              ast = {{:., [], [{:__aliases__, [alias: false], [:Morphology]}, name]}, [], [:sensor]}
+              IO.puts Macro.to_string(ast)
+              Code.eval_quoted(ast)
+      false -> "sensor must be an atom"
+    end
+  end
 
   @doc """
   Create a sensor with the specified name. Name must be chosen from the list of eligible sensors. In this case, only rng.
@@ -31,8 +33,10 @@ defmodule Sensor do
   def create(sensor_name) do
   #  need Macro to take the sensor_ame and generate the appropriate scape-related sensor.
   #   MacroTest.morphology(sensor_name, :sensor)
-    MacroTest.type(sensor_name)
+    sensor = type(sensor_name)
     IO.puts "Sensor.creates finishes"
+    IO.inspect sensor, label: "sensor is"
+    IO.inspect sensor_name, label: "sensor_name"
   end
 
   def generate(exoself_pid, node) do

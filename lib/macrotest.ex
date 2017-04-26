@@ -3,9 +3,8 @@ defmodule MacroTest do
     5
   end
 
-  defmacro type(sensor_name) do
-    IO.inspect sensor_name, label: "sensor_name"
-    {name, location, _} = sensor_name
+  defmacro type(name) do
+    IO.puts "macro loaded"
     IO.inspect name, label: "name"
     case is_atom(name) do
       true -> IO.puts "Sensor.type loaded"
@@ -17,9 +16,11 @@ defmodule MacroTest do
               #> {{:., [], [{:__aliases__, [alias: false], [:IO]}, :puts]}, [], ["hello"]}
               #  Perhaps I'm looking for Code.eval_quoted(ast_expression)
               ast = {{:., [], [{:__aliases__, [alias: false], [:Morphology]}, name]}, [], [:sensor]}
-              IO.puts Macro.to_string(ast)
-              Code.eval_quoted(ast)
-      false -> "sensor must be an atom"
+              # IO.puts Macro.to_string(ast)
+              ast
+              # Code.eval_quoted(ast)
+      false -> IO.puts "sensor must be an atom"
+        name
     end
   end
   # def print(variable) do
@@ -27,10 +28,10 @@ defmodule MacroTest do
   #   IO.puts test
   # end
 
-  defmacro morphology(morph, interactor) do
-    IO.puts "MacroTest loaded"
-    quote do
-      unquote({{:., [], [{:__aliases__, [alias: false], [:Morphology]}, morph]}, [], [interactor]})
-    end
-  end
+  # defmacro morphology(morph, interactor) do
+  #   IO.puts "MacroTest loaded"
+  #   quote do
+  #     unquote({{:., [], [{:__aliases__, [alias: false], [:Morphology]}, morph]}, [], [interactor]})
+  #   end
+  # end
 end
