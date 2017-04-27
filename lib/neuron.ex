@@ -13,6 +13,12 @@ defmodule Neuron do
     :math.pi() * 2
   end
 
+  defmacro af(function, input) do
+    quote do
+      {{:., [], [{:__aliases__, [alias: false], [:Neuron]}, unquote(function)]}, [], [unquote(input)]}
+    end
+  end
+
   def create(input_idps, id, cx_id, output_ids) do
     proper_input_idps = NeuralInput.create(input_idps, [])
     %Neuron{id: id, cx_id: cx_id, af: "tanh", input_idps: proper_input_idps, output_ids: output_ids}
