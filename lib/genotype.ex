@@ -21,8 +21,8 @@ defmodule Genotype do
   The command `TestGenotype.now` runs the above construct command.
   """
   def construct(file_name, sensor_name, actuator_name, hidden_layer_densities) do
-      s = Sensor.create(sensor_name)
-      a = Actuator.create(actuator_name)
+      {[s], _} = Sensor.create(sensor_name)
+      {[a], _} = Actuator.create(actuator_name)
       output_vl = [a.vl]
       #concatenate the hidden_layer_densities and output_vl to get total layer densities
       layer_densities = List.flatten([hidden_layer_densities | output_vl])

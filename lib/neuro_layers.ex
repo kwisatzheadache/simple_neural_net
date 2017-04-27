@@ -11,6 +11,7 @@ defmodule NeuroLayers do
     Finally, the call generates ids for the first layer of neurons, then drops into the recursive NeuroLayers.create call.
     """
   def init(cx_id, sensor, actuator, layer_densities) do
+    IO.inspect sensor, label: "sensor argument NeuroLayers.init"
     input_idps = [{sensor.id, sensor.vl}]
     total_layers = length(layer_densities)
     [fl_neurons | next_layer_densities] = layer_densities
