@@ -17,7 +17,7 @@ defmodule Trainer do
   @doc"""
   """
   def go(morphology, hld) do
-    go(morphology, hld, max_Attempts, eval_Limit, fitness_Target)
+    go(morphology, hld, MacroTest.max_Attempts, MacroTest.eval_Limit, MacroTest.fitness_Target)
   end
 
   def go(morphology, hld, max_attempts, eval_limit, fitness_target) do
