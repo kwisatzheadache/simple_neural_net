@@ -64,4 +64,7 @@ trains. Might be a few days before there's another major breakthrough.
 `mix test` working again.
 
 4/25 Working with macros. Call `Sensor.create(:xor_mimic)` and begin troubleshooting.
+
+4/30 Wondering if I can actually figure out how to make it train. The code
+is not very clean and I don't understand where to begin. 
 #
